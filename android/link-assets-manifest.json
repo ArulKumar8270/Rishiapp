@@ -1,0 +1,37 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "screen/assets/fonts/CircularStd-Black.ttf",
+      "sha1": "7d4636ee31102de79fabe4aaed5fbcb1794616c2"
+    },
+    {
+      "path": "screen/assets/fonts/CircularStd-BoldItalic.ttf",
+      "sha1": "09858873b95253051ffb95dce95e89cbcd08523d"
+    },
+    {
+      "path": "screen/assets/fonts/CircularStd-Book.ttf",
+      "sha1": "0c6771b69952bd37cbcd0a7a84df462aab7b86b1"
+    },
+    {
+      "path": "screen/assets/fonts/CircularStd-BookItalic.ttf",
+      "sha1": "988bfb1a4f78bc60820d66e1e340d1459e64664e"
+    },
+    {
+      "path": "screen/assets/fonts/CircularStd-Light Italic.ttf",
+      "sha1": "e885113ab227aa4f3447da206e2498b567668a26"
+    },
+    {
+      "path": "screen/assets/fonts/CircularStd-Light.ttf",
+      "sha1": "48f3a0bd9109b35975f947d37298f51d02bd774f"
+    },
+    {
+      "path": "screen/assets/fonts/CircularStd-Medium.ttf",
+      "sha1": "f628d893eeace8d28a81d46feaed4421f2581ccd"
+    },
+    {
+      "path": "screen/assets/fonts/Handmade.ttf",
+      "sha1": "d281a02b9eab6e4aae07846f6751e6599f4b61c8"
+    }
+  ]
+}
