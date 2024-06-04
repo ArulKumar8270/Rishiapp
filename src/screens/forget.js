@@ -19,6 +19,7 @@ const Forget = ({ navigation }) => {
     onSubmit: (values, { resetForm }) => {
       alert('Password reset link sent to ' + values.mobilenumber);
       resetForm();
+      navigation.navigate('Resetpassword')
     },
   });
 

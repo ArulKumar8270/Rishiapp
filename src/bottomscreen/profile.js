@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, Dimensions, Alert, Button, ScrollView } from 'react-native';
+import { FlatList, StyleSheet, Text, View, Image, TouchableOpacity, SafeAreaView, Dimensions, Alert, Button, ScrollView,ImageBackground } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { RadioButton } from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
@@ -14,6 +14,8 @@ import Basicdetails from './profileitems.js/basicdetails';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Dropdown from '../assets/components/custom_dropdown';
 import CustomDropDown from '../assets/components/custom_dropdown';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+
 //import { TabView, TabBar } from 'react-native-tab-view';
 
 const Profile = ({ navigation }) => {
@@ -27,7 +29,7 @@ const Profile = ({ navigation }) => {
     {
       id: 1, Name: 'name',
       image: require('../assets/dp.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.'
+      description:' Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.'
     }
   ]);
   const [selectedImage, setSelectedImage] = useState();
@@ -132,19 +134,32 @@ const Profile = ({ navigation }) => {
   });
 
   const profilitems = ({ item, updateUser }) => (
-    <SafeAreaView>
+   
+      <ImageBackground source={require('../assets/Background.png')}
+        style={{
+          padding: 15,
+          shadowColor: '#000',
+    shadowOffset: {
+      height: 4,
+      width: 10
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    // Apply elevation for Androi
+        }}>  
       <View style={{
         alignItems: 'center',
-        backgroundColor: '#fff',
+        //backgroundColor: '#fff',
         padding: 10,
         marginTop: '10%',
-        marginHorizontal: 20
+        marginHorizontal: 20,
       }}>
         <Image source={selectedImage ? { uri: selectedImage } : require('../assets/dp.png')} style={styles.dp} />
         <Text style={styles.profilename}>{item.Name}</Text>
-        <TouchableOpacity style={{ marginTop: -17, marginVertical: 10, marginLeft: 'auto' }} onPress={() => bottomSheetRef.current.open()}><PencilIcon height={15} width={15} color={'#2E86C1'} /></TouchableOpacity>
-        <Text style={styles.profileheadline}>{item.description}</Text>
+        <TouchableOpacity style={{ marginTop: -17, marginVertical: 10, marginLeft: 'auto' }} onPress={() => bottomSheetRef.current.open()}><PencilIcon height={15} width={15} color={'#fff'} /></TouchableOpacity>
+        <Text style={[styles.profileheadline,{color:'#fff'}]}>{item.description}</Text>
       </View>
+  
       <RBSheet
         ref={bottomSheetRef}
         height={windowHeight}
@@ -246,7 +261,7 @@ const Profile = ({ navigation }) => {
           )}
         </Formik>
       </RBSheet>
-    </SafeAreaView>
+      </ImageBackground>
   );
 
   //basic details :
@@ -592,14 +607,15 @@ const Profile = ({ navigation }) => {
       </RBSheet>
     </SafeAreaView>
   )
-  return (
-    <ScrollView style={styles.container}>
-      <FlatList
-        data={userData}
-        renderItem={({ item }) => profilitems({ item, updateUser })}
-        keyExtractor={(item) => item.id.toString()}
-      />
-      <FlatList
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'BasicDetails', title: 'Basic Details' },
+    { key: 'ProfessionalDetails', title: 'Professional Details' },
+    { key: 'EducationDetails', title: 'Education Details' }
+  ]);
+  const BasicdetailRoute = () => (
+    <ScrollView>
+       <FlatList
         data={basicDetails}
         renderItem={({ item }) => BasicRender({ item, updateDetails })}
         keyExtractor={(item) => item.id.toString()}
@@ -608,23 +624,73 @@ const Profile = ({ navigation }) => {
         data={experiencedata}
         renderItem={({ item }) => renderexperience({ item, updateExperience })}
         keyExtractor={(item) => item.id.toString()} />
-
-      <Text>Profile</Text>
     </ScrollView>
   );
+  const professiondetailRoute=()=>(
+    <View>
+      <Text>helo</Text>
+    </View>
+  );
+  const EducationalDetailsRoute=()=>(
+    <View>
+      <Text>
+        welcome
+
+      </Text>
+    </View>
+  );
+  const renderScene = SceneMap({
+    BasicDetails: BasicdetailRoute,
+    ProfessionalDetails: professiondetailRoute,
+    EducationDetails:EducationalDetailsRoute
+  });
+
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: '#560310' }}
+      style={{ backgroundColor: '#fff'}}
+      labelStyle={{ color: '#000', fontFamily: fonts.CircularStdBlack ,fontSize:SIZES.body5}}
+    />
+  );
+  return (
+    <View style={styles.container}>
+      <View>
+        <Text>
+          welcome
+        </Text>
+      </View>
+      <FlatList
+        data={userData}
+        renderItem={({ item }) => profilitems({ item, updateUser })}
+        keyExtractor={(item) => item.id.toString()}
+      />
+      <View>
+        <Text>
+          helo
+        </Text>
+      </View>
+      <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          renderTabBar={renderTabBar}
+           />
+    </View>
+  );
 };
-20
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffff',
-  },
+    flex:1.5
+      },
+      
   item: {
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 10,
     marginTop: '10%',
     marginHorizontal: 20,
-    borderRadius: 10,
+    borderRadius: 10,  
     borderWidth: 1,
     borderColor: '#ccc',
   },
@@ -645,6 +711,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     //borderColor: '#2874A6',
+    backgroundColor:'#fff'
   },
   Rbcontainer: {
     flex: 1,
@@ -668,7 +735,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.CircularStdBlack,
     fontSize: SIZES.body2,
     marginTop: 10,
-    color: '#560310'
+    color: '#fff'
   },
   profileheadline: {
     fontFamily: fonts.CircularStdBook,
@@ -685,6 +752,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 10,
     marginBottom: 20,
+  },
+  headerBackground: {
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      height: 4,
+      width: 10,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 6,
   },
   toggleText: {
     //fontSize: 16,

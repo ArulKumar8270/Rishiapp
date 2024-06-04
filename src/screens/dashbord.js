@@ -415,12 +415,12 @@ const openMaps = () => {
         </View>
       </View> */}
       <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10,width:'94%'}}>
-      <TouchableOpacity style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:35,backgroundColor:"#440217"}}>
+      <View style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:35,backgroundColor:"#440217"}}>
           <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Job Applied</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:43,backgroundColor:"#440217"}}>
+        </View>
+        <View style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:43,backgroundColor:"#440217"}}>
           <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Interview</Text>
-        </TouchableOpacity>
+        </View>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '2%', marginBottom: '2%' }}>
         <TouchableOpacity style={{ marginLeft: '5%' }}>

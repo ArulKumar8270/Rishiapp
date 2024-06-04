@@ -27,6 +27,7 @@ import AppliedSucsuss from './src/screens/Appliedsucsuss';
 import { fonts } from './config';
 import Sigin from './src/screens/signin';
 import Signup from './src/screens/signup';
+import Resetpassword from './src/screens/resetpassword';
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
 // in App.js
@@ -50,6 +51,7 @@ const App = () => {
         <Stack.Screen name='Basicdetails' component={Basicdetails}/>
         <Stack.Screen name='CompanyDetails' component={CompanyDetails}/>
         <Stack.Screen name='AppliedSucsuss' component={AppliedSucsuss}/>
+        <Stack.Screen name='Resetpassword' component={Resetpassword}/>
         {/* <Stack.Screen name='home' component={CustomDrawer}/> */}
       </Stack.Navigator>
     </NavigationContainer>
@@ -73,23 +75,23 @@ const DashboardStack = () => {
   }}}>
       <Tab.Screen name="Dashboard" component={Dashboard} options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <HomeIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <HomeIcon color={'#17202A'} height={20} width={25} style={undefined}/>
+            focused ? <HomeIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <HomeIcon color={'#17202A'} height={20} width={25}/>
           ),
          }}
       />
       <Tab.Screen name="Chat" component={Chat}  options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <ChatIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <ChatIcon color={'#17202A'} height={20} width={25} style={undefined}/>
+            focused ? <ChatIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <ChatIcon color={'#17202A'} height={20} width={25}/>
           ),
         }} />
       <Tab.Screen name="Notification" component={Notify}  options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <BellIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <BellIcon color={'#17202A'} height={20} width={25} style={undefined}/>
+            focused ? <BellIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <BellIcon color={'#17202A'} height={20} width={25}/>
           ),
         }} />
       <Tab.Screen name="Profile" component={Profile}  options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <MyIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <MyIcon color={'#17202A'} height={20} width={25} style={undefined}/>
+            focused ? <MyIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <MyIcon color={'#17202A'} height={20} width={25}/>
           ),
         }} />
     </Tab.Navigator>

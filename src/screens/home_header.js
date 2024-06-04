@@ -139,12 +139,6 @@ export default function HomeHeader({ title, navigation, isMainPage }) {
           {renderDetails("Search Jobs", false, false, <FontAwesomeIcon icon={faMagnifyingGlass} />)}
           {renderDetails("Recommended Jobs", false, false,<FontAwesomeIcon icon={faClipboard} />)}
           {renderDetails("Saved Jobs", false, false,<FontAwesomeIcon icon={faBookmark} /> )}
-          {renderDetails("Profile Performance", false, false,<FontAwesomeIcon icon={faChartSimple} /> )}
-          {renderDetails("Settings", false, false, <FontAwesomeIcon icon={faGear} />)}
-          {renderDetails("How Rishi Job Works", false, false, <FontAwesomeIcon icon={faBriefcase} />)}
-          {renderDetails("Rishi Job Blogs", false, false,<FontAwesomeIcon icon={faBlog} />)}
-          {renderDetails("Write to Us", false, false,<FontAwesomeIcon icon={faPenToSquare} /> )}
-          {renderDetails("About Us", false, false, <FontAwesomeIcon icon={faAddressCard} />)}
           {renderDetails("Log out", false, false, (
   <TouchableOpacity onPress={handleLogout}>
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -179,7 +173,7 @@ export default function HomeHeader({ title, navigation, isMainPage }) {
       </View>
     </View>
   );
-}
+} 
 
 const styles = StyleSheet.create({
   container: {
@@ -230,11 +224,11 @@ const styles = StyleSheet.create({
   bottomContent: {
     flexDirection:'row',
     justifyContent:'space-between',
-    marginTop: '60%',
     marginLeft: 10,
+    marginTop:'150%',
     //borderTopWidth: 1,
     //borderTopColor: '#ccc',
-    paddingTop: 10,
+    padding:10,
   },
   profilecontainer:{
     marginTop:'5%',

@@ -16,6 +16,7 @@ import {SIZES} from '../styles/config';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
+import Otp from './otp';
 
 const Signup = ({navigation}) => {
   const [otpValue, setOtpValue] = React.useState(null);
@@ -40,45 +41,22 @@ const Signup = ({navigation}) => {
   });
 
   const onSubmit = async formData => {
-    console.log(formData, 'formData245234');
-    if (!otpValue) {
       try {
-        const response = await axios.get(`https://rishijob.com:5000/api/v1/courses`);
-        console.log(response, 'response5234');
+        const response = await axios.post(`https://rishijob.com/backend/api/v1/customers/number/${formData?.phoneNumber}`,
+        formData
+      );
+
+        console.log(formData, 'formData32134', response.data);
         if (response?.data) {
-          alert('Otp sent your registered Phone Number');
-          setOldOtp(response?.data);
+          navigation.navigate('Otp',{Otp : response.data, Data :  formData})
+          Alert('Otp sent your registered Phone Number');
+          setOldOtp(response?.data);  
+          
         }
-        console.log(formData, 'formData32134', response);
       } catch (error) {
-        console.log(error, 'error34');
-        alert('Somthis want worng');
+        console.log("Error____________________",error);
+        Alert('Somthis want worng');
       }
-    } else {
-      if (String(oldOtp?.data) === String(otpValue)) {
-        try {
-          let tempData = {
-            ...formData,
-            userName: formData?.phoneNumber,
-          };
-          let result = await axios.post(
-            `${infoData?.baseApi}/customers`,
-            tempData,
-          );
-          console.log(result, 'asdfasd');
-          Alert('Register Successful');
-          setTimeout(() => {
-            navigation.navigate('/Login');
-          }, 1000);
-        } catch (error) {
-          if (error.response) {
-            alert(error.response.data?.message);
-          }
-        }
-      } else {
-        alert('Please check your otp');
-      }
-    }
   };
 
   return (
@@ -119,7 +97,6 @@ const Signup = ({navigation}) => {
           }}
           validationSchema={validationSchema}
           onSubmit={values => {
-            console.log(values, 'onSubmitsdfadsasd');
             onSubmit(values);
           }}>
           {({

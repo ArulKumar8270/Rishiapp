@@ -30,6 +30,7 @@ const App = () => {
           }
         } catch (err) {
           console.warn(err);
+          
         }
       }
     };
@@ -83,7 +84,6 @@ const App = () => {
       console.error('Error fetching city name:', error);
     }
   };
-
   const subscribeLocationLocation = () => {
     watchID = Geolocation.watchPosition(
       position => {
