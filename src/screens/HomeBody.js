@@ -18,6 +18,7 @@ import Bottomtab from "./bottomtab";
 import BottomTab from "./bottomtab";
 import { loader } from "../assets";
 import { Overlay } from "react-native-elements";
+import Header from "./postJob/header";
 
 export default function HomeBody({
     children,
@@ -25,6 +26,8 @@ export default function HomeBody({
     title,
     isLoading = false,
     isMainPage,
+    postJobDashbord,
+    mainDashbord,
     navigation }) {
    
 
@@ -72,7 +75,14 @@ export default function HomeBody({
                 angle={45}
                 angleCenter={{ x: 0.5, y: 0.5 }}
                 colors={["white", "white"]} >
-                <HomeHeader title={title} isMainPage={isMainPage} navigation={navigation} />
+                    { mainDashbord &&
+                        <HomeHeader title={title} isMainPage={isMainPage} navigation={navigation} />
+                    }
+                
+                { postJobDashbord &&
+                    <Header title={title} isMainPage={isMainPage} navigation={navigation} />
+                }
+                
                 {children}
                 {/* <ScrollView>
                 

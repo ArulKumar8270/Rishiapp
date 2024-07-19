@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, TextInput, TouchableOpacity,Image,Dimensions,PermissionsAndroid, Alert,Linking} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -13,18 +13,18 @@ import { SIZES, fontSize } from '../styles/config';
 import { MaterialIcons } from '@expo/vector-icons';
 import { RateingIcon,Rate, BookmarkIcon, BackIcon, CurrentLocation } from '../assets/svg';
 import { Drawer } from 'react-native-paper';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import RowBottomsheetContent from './rbsheet';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { CustomTextInput } from '../assets/textinput';
 import Geolocation from '@react-native-community/geolocation';
 import { err } from 'react-native-svg';
+import axios from 'axios';
 
 const Dashboard = ({ navigation }) => {
   const searchsheet=useRef();
   const windowHeight = Dimensions.get('window').height;
-  const Drawer = createDrawerNavigator
+  const [dataValue, setDataValue] = useState(null)
   const initialData = [
     {
       key: '1',
@@ -201,7 +201,7 @@ const Dashboard = ({ navigation }) => {
   // const validData = [{ key: '1', title: 'Job Applied', color: '#2E86C1' },
   // { key: '2', title: 'Interview', color: '#F06292' }]
 
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState(dataValue);
   const [searchLocation, setSearchLocation] = useState('');
   const [searchText, setSearchText] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -209,7 +209,7 @@ const Dashboard = ({ navigation }) => {
   const [partTimeCheckBox, setPartTimeCheckBox] = useState(false);
   const [fullPartTimeCheckBox, setFullPartTimeCheckBox] = useState(false);
   const [isLoading, setLoading] = useState(true);
-  const [filterData, setFilterData]=useState(initialData)
+  const [filterData, setFilterData]=useState(dataValue)
   const [currentLocation, setCurrentLocation] = useState(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
   // Function to get permission for location
@@ -254,6 +254,36 @@ const getCurrentLocation = () => {
     );
 };
 
+const jobDetailsApi = useCallback(async (values) => {
+  setLoading(true);
+  try {
+    const response = await axios.get('https://rishijob.com/backend/api/v1/jobs');
+    
+    setDataValue(response.data.data.data)
+    setLoading(false);
+  } catch (error) {
+    setLoading(false);
+   
+
+    if (error.response) {
+      // Server responded with a status other than 200 range
+      console.error('Server error:', error.response.data);
+      Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('Network error:', error.request);
+      Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
+    } else {
+      // Something else happened in setting up the request
+      console.error('Error:', error.message);
+      Alert.alert('Login Failed', 'An error occurred. Please try again.');
+    }
+  }
+}, [navigation]);
+useEffect(() => {
+  jobDetailsApi()
+},[])
+
 const openMaps = () => {
     if (currentLocation) {
         const { latitude, longitude } = currentLocation;
@@ -268,14 +298,14 @@ const openMaps = () => {
   const handleSearch = (text,location) => {
     setData(text);
     setSearchLocation(location);
-    const filtered = initialData.filter(item =>
+    const filtered = dataValue.filter(item =>
       item.Role.toLowerCase().includes(text.toLowerCase()) &&
       item.location.toLowerCase().includes(location.toLowerCase())
     );
     setFilterData(filtered);
   };
   useEffect(() => {
-    setFilterData(initialData);
+    setFilterData(dataValue);
   }, []);
   const handleSearchPress = () => {
     // Perform search logic here, if needed
@@ -299,6 +329,7 @@ const openMaps = () => {
     return () => clearTimeout(timer);
   }, []);
   const renderItem = ({ item }) => (
+   
     <TouchableOpacity style={styles.item} onPress={()=>{
       navigation.navigate('CompanyDetails',{item})
   }
@@ -306,10 +337,10 @@ const openMaps = () => {
       <View style={{ flexDirection: 'row',justifyContent:'space-between' }}>
         <View style={{width:'90%'}}>
           {/* <Text style={styles.title}>{item.title}</Text> */}
-          <Text style={styles.roll}>{item.Role}</Text>
-          <Text style={styles.company}>{item.company}</Text>
-          <Text style={styles.details}>{item.EmploymentType}</Text>
-          <View style={styles.description}><FontAwesomeIcon icon={faLocationDot} color='#808B96'/><Text style={styles.details}>{item.location}</Text></View>
+          <Text style={styles.roll}>{item.jobTitle}</Text>
+          <Text style={styles.company}>{item.companyName}</Text>
+          <Text style={styles.details}>{item.companyName}</Text>
+          <View style={styles.description}><FontAwesomeIcon icon={faLocationDot} color='#808B96'/><Text style={styles.details}>{item.jobLocation}</Text></View>
           <View style={styles.description}><FontAwesomeIcon icon={faSuitcase} color='#808B96'/><Text style={styles.details}>{item.experience}</Text></View>
           <View style={styles.description}><FontAwesomeIcon icon={faWallet} color='#808B96'/><Text style={styles.details}>{item.salarydetails}</Text></View>
         </View>
@@ -328,6 +359,7 @@ const openMaps = () => {
   return (
     <HomeBody
       navigation={navigation}
+      mainDashbord={true}
       title={'Dashboard'}
       isMainPage={true}
       isLoading={isLoading}
@@ -336,14 +368,7 @@ const openMaps = () => {
       <View style={[styles.searchContainer, isSearchFocused && styles.searchContainerFocused]}>
         <FontAwesomeIcon icon={faSearch} size={20} style={styles.searchIcon} />
         <Text>search here...</Text>
-        {/* <TextInput
-          placeholder="Search..."
-          style={styles.searchInput}
-          onChangeText={handleSearch}
-          value={data}
-          // onFocus={handleSearchFocus}
-          // onBlur={handleSearchBlur}
-        /> */}
+   
        
       </View>
       </TouchableOpacity>
@@ -379,41 +404,7 @@ const openMaps = () => {
           </RBSheet>
       
 
-      {/*<View style={styles.checkboxContainer}>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center', backgroundColor: '#D7DBDD', borderWidth: 0.5,
-          borderRadius: 30
-        }}>
-          <CheckBox
-            value={fullTimeCheckBox}
-            onValueChange={(value) => setFullTimeCheckBox(value)}
-          />
-          <Text style={styles.checkboxLabel}>Full Time</Text>
-        </View>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center', backgroundColor: '#D7DBDD', borderWidth: 0.5,
-          borderRadius: 30
-        }}>
-          <CheckBox
-            value={partTimeCheckBox}
-            onValueChange={(value) => setPartTimeCheckBox(value)}
-          />
-          <Text style={styles.checkboxLabel}>Part Time</Text>
-        </View>
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center', backgroundColor: '#D7DBDD', borderWidth: 0.5,
-          borderRadius: 30
-        }}>
-          <CheckBox
-            value={fullPartTimeCheckBox}
-            onValueChange={(value) => setFullPartTimeCheckBox(value)}
-          />
-          <Text style={styles.checkboxLabel}>Full/{"\n"}Part Time </Text>
-        </View>
-      </View> */}
+      
       <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10,width:'94%'}}>
       <View style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:35,backgroundColor:"#440217"}}>
           <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Job Applied</Text>
@@ -434,8 +425,8 @@ const openMaps = () => {
       <ScrollView>
         <View style={styles.container}>
          <FlatList
-            data={ filterData|| initialData}
-            extraData={filterData || initialData}
+            data={ filterData|| dataValue}
+            extraData={filterData || dataValue}
             renderItem={renderItem}
             keyExtractor={(item) => item.key}
             contentContainerStyle={styles.flatListContent}

@@ -19,15 +19,17 @@ import { HomeIcon,ChatIcon,BellIcon, MyIcon, FocusBell, FocusHomeIcon, FocusChat
 import { View } from 'react-native';
 import Serachbar from './src/screens/serachbar';
 import Basicdetails from './src/bottomscreen/profileitems.js/basicdetails';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import CompanyDetails from './src/screens/companydetails';
 //import CustomDrawer from './src/navigation/CustomDrawer';
-import { getAnimatedStyle } from 'react-native-reanimated';
 import AppliedSucsuss from './src/screens/Appliedsucsuss';
 import { fonts } from './config';
 import Sigin from './src/screens/signin';
 import Signup from './src/screens/signup';
 import Resetpassword from './src/screens/resetpassword';
+import ConversationScreen from './src/bottomscreen/conversationScreen';
+import Postlogin from './src/screens/Postlogin';
+import PostSignup from './src/screens/postSignup';
+import PostOtp from './src/screens/PostOtp';
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
 // in App.js
@@ -39,6 +41,9 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, presentation: 'modal' }}>
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="PostSignup" component={PostSignup} />
+        <Stack.Screen name="Postlogin" component={Postlogin} />
+        <Stack.Screen name="PostOtp" component={PostOtp} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Forget" component={Forget} />
         <Stack.Screen name="Verifi" component={Verifi} />
@@ -52,6 +57,7 @@ const App = () => {
         <Stack.Screen name='CompanyDetails' component={CompanyDetails}/>
         <Stack.Screen name='AppliedSucsuss' component={AppliedSucsuss}/>
         <Stack.Screen name='Resetpassword' component={Resetpassword}/>
+        <Stack.Screen name='ConversationScreen' component={ConversationScreen}/>
         {/* <Stack.Screen name='home' component={CustomDrawer}/> */}
       </Stack.Navigator>
     </NavigationContainer>

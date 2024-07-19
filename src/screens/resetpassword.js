@@ -1,31 +1,58 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
+import React, { useState } from 'react';
 import { Formik } from 'formik';
 import * as yup from 'yup'; // You need to install yup for schema validation
 
-import { SIZES, fontSize } from '../styles/config'
-import { fonts } from '../../config'
-import LinearGradient from 'react-native-linear-gradient'
+import { SIZES, fontSize } from '../styles/config';
+import { fonts } from '../../config';
+import LinearGradient from 'react-native-linear-gradient';
+import axios from 'axios';
 
-const Resetpassword = ({navigation}) => {
+const Resetpassword = ({navigation,route}) => {
   const [loading, setLoading] = useState(false);
+const params = route
 
   const validationSchema = yup.object().shape({
     resetPassword: yup.string().required('Reset Password is required'),
     confirmPassword: yup.string().oneOf([yup.ref('resetPassword'), null], 'Passwords must match').required('Confirm Password is required'),
   });
 
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     setLoading(true);
-    // Your form submission logic here
-    // For example, you can call an API to reset the password
-    // After the submission is done, setLoading(false);
-  }
+    try {
+      const request = {
+        userName: params.params.values.mobilenumber,
+        password: values.resetPassword,
+      };
+      const response = await axios.post('https://rishijob.com/backend/api/v1/customers/reset/resetPassword', request);
+      console.log('response===============',response.data)
+      if (response.data) {
+        Alert.alert(  
+          'Success',
+          response.data.data.message,
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('Login'),
+            },
+          ]
+        );
+      } else {
+        Alert.alert('Error', 'Failed to reset password. Please try again.');
+      }
+      
+    } catch (error) {
+      Alert.alert(error, 'An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Formik
         initialValues={{ resetPassword: '', confirmPassword: '' }}
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit} 
         validationSchema={validationSchema}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
@@ -33,7 +60,6 @@ const Resetpassword = ({navigation}) => {
             <Image source={require('../assets/LOCK.jpg')} style={styles.image1} />
             <Text style={styles.resetText}>Please enter your new password below:</Text>
             <TextInput
-            
               placeholder='Reset Password'
               style={styles.input}
               onChangeText={handleChange('resetPassword')}
@@ -68,41 +94,41 @@ const Resetpassword = ({navigation}) => {
                 ) : (
                   <Text style={{ textAlign: 'center', color: 'white', fontFamily: fonts.CircularStdMedium }}>Submit</Text>
                 )}
-              </TouchableOpacity>
+              </TouchableOpacity> 
             </LinearGradient>
           </>
         )}
       </Formik>
       <TouchableOpacity style={{ marginLeft: '50%' }} onPress={() => {
-        setLoading(true)
-        navigation.navigate('Forget')
-        setLoading(false)
-      }
-      }></TouchableOpacity>
+        setLoading(true);
+        navigation.navigate('Forget');
+        setLoading(false);
+      }}>
+        <Text style={{ color: '#411004', fontFamily: fonts.CircularStdLight }}>&#60; BACK TO FORGET PASSWORD</Text>
+      </TouchableOpacity>
     </View>
-  )
+  );
 }
 
-export default Resetpassword
+export default Resetpassword;
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    alignItems:'center',
-    justifyContent:'center',
-    backgroundColor:'#fff'
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff'
   },
   resetText: {
-    marginVertical:20,
+    marginVertical: 20,
     fontSize: fontSize.textLarge,
     fontFamily: fonts.CircularStdBlack,
     color: '#411004',
-},
+  },
   image1: {
-    marginBottom:-30,
+    marginBottom: -30,
     height: '20%',
     width: '20%',
-    //marginTop: '%',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
     resizeMode: 'center',
   },
   input: {
@@ -133,4 +159,3 @@ const styles = StyleSheet.create({
     marginBottom: '2%',
   },
 });
- 

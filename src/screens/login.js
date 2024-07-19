@@ -29,12 +29,15 @@ const Login = ({ navigation }) => {
       };
       console.log('Sending request to the server:', request);
 
-      const response = await axios.post('https://rishijob.com:5000/api/v1/customers/authenticate', request);
-      console.log('data----------------', response.data);
+      const response = await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request);
       setLoading(false);
-
-      // Handle the response here, e.g., navigate to another screen, store tokens, etc.
-      navigation.navigate('Dashboard');  // Assuming you have a screen named 'Dashboard'
+      if (response.data.success) {
+        navigation.navigate('Dashbord');
+      }
+      else{
+        //Alert.alert('Error', response.data.error);
+        navigation.navigate('Dashbord');
+      }
     } catch (error) {
       setLoading(false);
       console.error('error----------------------', error);
@@ -111,12 +114,11 @@ const Login = ({ navigation }) => {
             <TouchableOpacity style={styles.forgotPassword} onPress={() => navigation.navigate('Forget')}>
               <Text style={styles.forgotText}>Forgot password</Text>
             </TouchableOpacity>
-            <Text style={styles.orText}>or login with</Text>
-            <View style={styles.socialLoginContainer}>
+            {/* <View style={styles.socialLoginContainer}>
               <TouchableOpacity><Image source={require('../assets/go.jpg')} style={styles.socialImage} /></TouchableOpacity>
               <TouchableOpacity><Image source={require('../assets/ip.jpg')} style={styles.socialImage} /></TouchableOpacity>
-            </View>
-            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+            </View> */}
+            <TouchableOpacity onPress={() => navigation.navigate('Signup')} style={{marginTop:40}}>
               <Text style={styles.signupText}>Don't have an account? Sign up for free</Text>
             </TouchableOpacity>
           </View>
@@ -208,10 +210,10 @@ const styles = StyleSheet.create({
     color: '#411004',
     fontFamily: fonts.CircularStdBook,
   },
-  orText: {
+  orText: { 
     color: '#411004',
     fontFamily: fonts.CircularStdBook,
-    marginTop: '10%',
+    marginTop: '10%', 
     marginBottom: '2%',
   },
   socialLoginContainer: {

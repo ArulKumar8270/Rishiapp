@@ -2,7 +2,6 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import SplashStack from './splash';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer';
 
 
 const Stack = createNativeStackNavigator();

@@ -1,5 +1,5 @@
 import { ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { assets } from '../../react-native.config'
 import { SIZES } from '../styles/config'
 import { BackIcon, BookmarkIcon, LocationIcon, MyIcon, PagesIcon, PinIcon, SharIcon, SuiteCaseIcon, WalletIcon } from '../assets/svg'
@@ -7,10 +7,54 @@ import { fonts } from '../../config'
 import { ScrollView } from 'react-native-gesture-handler'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import LinearGradient from 'react-native-linear-gradient'
+import axios from 'axios'
 
 const CompanyDetails = ({ navigation,route }) => {
 const {params} = route;
-console.log('==============================',params)
+const [loading, setLoading] = useState(false);
+const handleApplyjob = useCallback(async () => {
+  setLoading(true);
+  try {
+    let request = {
+      userName : params.item.userName,
+      jobTitle : params.item.jobTitle,
+      jobCategory : params.item.jobTitle,
+      companyName :params.item.companyName,
+      companyId : params.item.companyId,
+      jobStatus : params.item.jobStatus,
+      name : params.item.name,
+      phoneNumber : params.item.phoneNumber,
+      email : params.item.email,
+      jobLocation : params.item.jobLocation,
+      experienceType : params.item.experienceType,
+      experience :params.item.experience,
+      oldCompanyName : params.item.oldCompanyName,
+      resume :params.item.resume
+    };
+    const response = await axios.post('https://rishijob.com/backend/api/v1/jobs',request)
+    if(response.data.success)
+      {
+        navigation.navigate('AppliedSucsuss')
+      }
+    setLoading(false)
+  } catch (error) {
+    setLoading(false);
+    console.error('error----------------------', error);
+    if (error.response) {
+      // Server responded with a status other than 200 range
+      console.error('Server error:', error.response.data);
+      Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('Network error:', error.request);
+      Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
+    } else {
+      // Something else happened in setting up the request
+      console.error('Error:', error.message);
+      Alert.alert('Login Failed', 'An error occurred. Please try again.');
+    }
+  }
+}, [navigation]);
   const renderHeader = () => {
     return (
       <ImageBackground source={require('../assets/Background.png')}
@@ -53,15 +97,14 @@ console.log('==============================',params)
         </View>
         <View>
           <Image source={require('../assets/zoho.png')} style={styles.logoImage} />
-          <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBlack, fontSize: SIZES.h2, marginBottom: 5 }}>{params.item.Role}</Text>
+          <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBlack, fontSize: SIZES.h2, marginBottom: 5 }}>{params.item.jobTitle}</Text>
           <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>{params.item.company}</Text>
-          <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>Industry</Text>
+          <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>{params.item.jobCategory}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>Applicants</Text>
-            <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>Posted date:</Text>
+            <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>Posted date:{params.item.updatedAt}</Text>
           </View>
-        </View>
-        
+        </View> 
       </ImageBackground>
 
     )
@@ -70,7 +113,7 @@ console.log('==============================',params)
     id:1,
     experience:params.item.experience,
     Opennings:params.item.Opennings,
-    location:params.item.location,
+    location:params.item.jobLocation,
     salaryPA:params.item.salaryPA,
     interviewType:params.item.interviewType,
     MustSkill:params.item.MustSkill,
@@ -117,11 +160,11 @@ console.log('==============================',params)
       <View>
        <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Industr
        yType</Text>
-       <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.IndustryType}</Text>
+       <Text style={[styles.JobRollItems,{marginVertical:4}]}>{params.item.jobCategory}</Text>
        <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Department</Text>
-       <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.Department}</Text>
+       <Text style={[styles.JobRollItems,{marginVertical:4}]}>{params.item.jobTitle}</Text>
        <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Role</Text>
-       <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.Role}</Text>
+       <Text style={[styles.JobRollItems,{marginVertical:4}]}>{params.item.jobTitle}</Text>
        <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Employment Type</Text>
        <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.EmploymentType}</Text>
        <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Education</Text>
@@ -138,9 +181,9 @@ const AboutCompanyRender=({item})=>(
   <SafeAreaView style={styles.basicitem}>
     <View>
       <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Company Details</Text>
-      <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.CompanyDetails}</Text>
+      <Text style={[styles.JobRollItems,{marginVertical:4}]}>{params.item.companyId}</Text>
       <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>CompanyName</Text>
-      <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.CompanyName}</Text>
+      <Text style={[styles.JobRollItems,{marginVertical:4}]}>{params.item.companyName}</Text>
     </View>
   </SafeAreaView>
 )
@@ -216,7 +259,7 @@ const [index, setIndex] = useState(0);
           locations={[0, 0.5, 1]}
           style={styles.button}
         >
-          <TouchableOpacity onPress={()=>navigation.navigate('AppliedSucsuss')}>
+          <TouchableOpacity onPress={()=>handleApplyjob()}>
             <Text style={{ textAlign: 'center', color: 'white', fontFamily: fonts.CircularStdMedium }}>Apply</Text>
           </TouchableOpacity>
         </LinearGradient>

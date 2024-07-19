@@ -21,6 +21,7 @@ import WalletIcon from './walleticon'
 import PinIcon from './pinicon'
 import PagesIcon from './pagesicon'
 import CurrentLocation from './currentlocation'
+import Doc from './doc'
 export {
     SideMenuIcon,
     NewIcon,
@@ -49,5 +50,6 @@ export {
    WalletIcon,
    PinIcon,
    PagesIcon,
-   CurrentLocation
+   CurrentLocation,
+   Doc
 }

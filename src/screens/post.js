@@ -1,159 +1,225 @@
-import React from 'react';
-import { SafeAreaView, Text, Image, StyleSheet, TextInput, TouchableOpacity,View,KeyboardAvoidingView } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { fonts } from '../../config';
-import { fontSize,SIZES } from '../styles/config';
-import { Formik } from 'formik'; // Import Formik
+import React, { useRef, useState } from 'react';
+import { Dimensions, StyleSheet, Text, View, TextInput, Button, SafeAreaView, TouchableOpacity } from 'react-native';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
+import HomeBody from './HomeBody';
+import { fonts } from '../../config';
+import { CustomTextInput } from '../assets/textinput';
+import LinearGradient from 'react-native-linear-gradient';
+import { SIZES } from '../styles/config';
 
-const Post = () => {
-  // Define the initial form values
-  const initialValues = {
-    jobTitle: '',
-    numPeople: '',
-    jobType: '',
-    jobEligibility: '',
-    salaryAmount: '',
-    salaryPeriod: '',
-    jobDescription: '',
-  };
+const validationSchema = Yup.object().shape({
+  jobTitle: Yup.string().required('Job Title is required'),
+  companyEmail: Yup.string().email('Invalid email').required('Company Email is required'),
+  companyWebsite: Yup.string().url('Invalid URL').required('Company Website is required'),
+  companyAddress: Yup.string().required('Company Address is required'),
+  totalEmployees: Yup.number().required('Total Employees is required').min(1, 'Must be at least 1'),
+});
 
-  // Define the validation schema using Yup
-  const validationSchema = Yup.object({
-    jobTitle: Yup.string().required('Job title is required'),
-    numPeople: Yup.number().required('Number of people is required'),
-    jobType: Yup.string().required('Job type is required'),
-    jobEligibility: Yup.string().required('Eligibility is required'),
-    salaryAmount: Yup.number().required('Salary amount is required'),
-    salaryPeriod: Yup.string().required('Salary period is required'),
-    jobDescription: Yup.string().required('Job description is required'),
-  });
-
-  // Handle form submission
-  const onSubmit = (values, { resetForm }) => {
-    // Handle your form submission logic here
-    console.log(values);
-    // Reset the form after submission
-    resetForm();
-  };
+const Post = ({ navigation }) => {
+  const searchsheet = useRef();
+  const windowHeight = Dimensions.get('window').height;
+  const [isLoading, setLoading] = useState(false);
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={onSubmit}
+    <HomeBody
+      navigation={navigation}
+      title={'Home'}
+      postJobDashbord={true}
+      isMainPage={true}
+      isLoading={isLoading}
     >
-      {({ values, handleChange, handleSubmit, errors, touched }) => (
-        <KeyboardAvoidingView
-        style={styles.container}
-        behavior="padding"
+      <Formik
+        initialValues={{
+          jobTitle: '',
+          companyEmail: '',
+          companyWebsite: '',
+          companyAddress: '',
+          totalEmployees: '',
+          logo: null,
+        }}
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          setLoading(true);
+          console.log(values);
+          setLoading(false);
+        }}
       >
-        <Image source={require('../assets/logo.jpg')} style={styles.image} />
-          <Text style={{ fontFamily: fonts.CircularStdBlack, fontSize: fontSize.amountFont, color: '#411004', marginTop: '2%' }}>POST JOB</Text>
-          <TextInput
-            placeholder="enter job title"   
-            value={values.jobTitle}
-            onChangeText={handleChange('jobTitle')}
-            style={styles.input}
+        {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors, touched }) => (
+          // <View style={styles.form}>
+          //   <Text>Job Title</Text>
+          //   <TextInput
+          //     style={styles.input}
+          //     onChangeText={handleChange('jobTitle')}
+          //     onBlur={handleBlur('jobTitle')}
+          //     value={values.jobTitle}
+          //   />
+          //   {touched.jobTitle && errors.jobTitle && <Text style={styles.error}>{errors.jobTitle}</Text>}
+
+          //   <Text>Company Email</Text>
+          //   <TextInput
+          //     style={styles.input}
+          //     onChangeText={handleChange('companyEmail')}
+          //     onBlur={handleBlur('companyEmail')}
+          //     value={values.companyEmail}
+          //     keyboardType="email-address"
+          //   />
+          //   {touched.companyEmail && errors.companyEmail && <Text style={styles.error}>{errors.companyEmail}</Text>}
+
+          //   <Text>Company Website</Text>
+          //   <TextInput
+          //     style={styles.input}
+          //     onChangeText={handleChange('companyWebsite')}
+          //     onBlur={handleBlur('companyWebsite')}
+          //     value={values.companyWebsite}
+          //     keyboardType="url"
+          //   />
+          //   {touched.companyWebsite && errors.companyWebsite && <Text style={styles.error}>{errors.companyWebsite}</Text>}
+
+          //   <Text>Company Address</Text>
+          //   <TextInput
+          //     style={styles.input}
+          //     onChangeText={handleChange('companyAddress')}
+          //     onBlur={handleBlur('companyAddress')}
+          //     value={values.companyAddress}
+          //   />
+          //   {touched.companyAddress && errors.companyAddress && <Text style={styles.error}>{errors.companyAddress}</Text>}
+
+          //   <Text>Total Employees</Text>
+          //   <TextInput
+          //     style={styles.input}
+          //     onChangeText={handleChange('totalEmployees')}
+          //     onBlur={handleBlur('totalEmployees')}
+          //     value={values.totalEmployees}
+          //     keyboardType="numeric"
+          //   />
+          //   {touched.totalEmployees && errors.totalEmployees && <Text style={styles.error}>{errors.totalEmployees}</Text>}
+
+          //   <Button
+          //     title="Upload Logo"
+          //     onPress={() => {
+          //       // Add your file picker logic here
+          //     }}
+          //   />
+          //   <Button onPress={handleSubmit} title="Update" />
+          // </View>
+          <SafeAreaView style={[styles.card, styles.shadowProp]}>
+          <Text style={styles.headerText}>Company Profile</Text>
+          <CustomTextInput
+            label={'Company Name'}
+            labelStyle={{fontFamily: fonts.CircularStdLight}}
+            maxLength={30}
+            onChangeText={handleChange('companyName')}
+            onBlur={handleBlur('companyName')}
+            value={values.companyName}
+            error={touched.companyName && errors.companyName}
+            inputStyle={{fontFamily: fonts.CircularStdBook}}
+            errorStyle={{fontFamily: fonts.CircularStdBook}}
           />
-          {touched.jobTitle && errors.jobTitle && (
-            <Text style={{ color: 'red' }}>{errors.jobTitle}</Text>
-          )}
-          <TextInput
-            placeholder="number of people you wish to hire for this job"
-            value={values.numPeople}
-            onChangeText={handleChange('numPeople')}
-            style={styles.input}
+          <CustomTextInput
+            label={'Company Email'}
+            labelStyle={{fontFamily: fonts.CircularStdLight}}
+            maxLength={30}
+            onChangeText={handleChange('companyEmail')}
+            onBlur={handleBlur('companyEmail')}
+            value={values.companyEmail}
+            error={touched.companyEmail && errors.companyEmail}
+            inputStyle={{fontFamily: fonts.CircularStdBook}}
+            errorStyle={{fontFamily: fonts.CircularStdBook}}
           />
-          {touched.numPeople && errors.numPeople && (
-            <Text style={{ color: 'red' }}>{errors.numPeople}</Text>
-          )}
-          <TextInput
-            placeholder="job type"
-            value={values.jobType}
-            onChangeText={handleChange('jobType')}
-            style={styles.input}
+          <CustomTextInput
+            label={'Company Website'}
+            labelStyle={{fontFamily: fonts.CircularStdLight}}
+            maxLength={100}
+            onChangeText={handleChange('companyWebsite')}
+            onBlur={handleBlur('companyWebsite')}
+            value={values.companyWebsite}
+            error={touched.companyWebsite && errors.companyWebsite}
+            inputStyle={{fontFamily: fonts.CircularStdBook}}
+            errorStyle={{fontFamily: fonts.CircularStdBook}}
           />
-          {touched.jobType && errors.jobType && (
-            <Text style={{ color: 'red' }}>{errors.jobType}</Text>
-          )}
-          <TextInput
-            placeholder="jobEligibility"
-            value={values.jobEligibility}
-            onChangeText={handleChange('jobEligibility')}
-            style={styles.input}
+          <CustomTextInput
+            label={'Company Address'}
+            labelStyle={{fontFamily: fonts.CircularStdLight}}
+            maxLength={100}
+            onChangeText={handleChange('companyAddress')}
+            onBlur={handleBlur('companyAddress')}
+            value={values.companyAddress}
+            error={touched.companyAddress && errors.companyAddress}
+            inputStyle={{fontFamily: fonts.CircularStdBook}}
+            errorStyle={{fontFamily: fonts.CircularStdBook}}
           />
-          {touched.jobEligibility && errors.jobEligibility && (
-            <Text style={{ color: 'red' }}>{errors.jobEligibility}</Text>
-          )}
-          {/* Add more inputs and error handling for each input */}
-          <View style={{ flexDirection: 'row', justifyContent:'space-evenly', alignItems: 'center', marginTop:'-1%' }}>
-            <TextInput
-              placeholder="salary amount"
-              value={values.salaryAmount}
-              onChangeText={handleChange('salaryAmount')}
-              style={{ height: '100%', width: '38%', borderWidth: 2, borderColor: '#560310', padding: 10, borderRadius: SIZES.radius, marginRight: '4%' }}
-            />
-            <TextInput
-              placeholder="per month"
-              value={values.salaryPeriod}
-              onChangeText={handleChange('salaryPeriod')}
-              style={{ height: '100%', width: '38%', borderWidth: 2, borderColor: '#560310', padding: 10, borderRadius: SIZES.radius }}
-            />
+          <CustomTextInput
+            label={'Total Employees'}
+            labelStyle={{fontFamily: fonts.CircularStdLight}}
+            maxLength={10}
+            onChangeText={handleChange('totalEmployees')}
+            onBlur={handleBlur('totalEmployees')}
+            value={values.totalEmployees}
+            error={touched.totalEmployees && errors.totalEmployees}
+            inputStyle={{fontFamily: fonts.CircularStdBook}}
+            errorStyle={{fontFamily: fonts.CircularStdBook}}
+          />
+          <View style={styles.buttonContainer}>
+            <LinearGradient
+              colors={['#440217', '#CF577D', '#440217']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1.5}}
+              locations={[0, 0.5, 1]}
+              style={styles.button}>
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Update</Text>
+              </TouchableOpacity>
+            </LinearGradient>
           </View>
-          <TextInput
-            placeholder="job description"
-            value={values.jobDescription}
-            onChangeText={handleChange('jobDescription')}
-            style={{ height: '20%', width: '80%', borderWidth: 2, borderColor: '#560310', padding: 10, marginTop:'2%',marginBottom:'2%',  borderRadius: SIZES.radius // Enable multiline input
-             }}
-             textAlignVertical="top"
-             
-          />
-          <LinearGradient
-            colors={['#440217', '#CF577D', '#440217']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1.5 }}
-            locations={[0, 0.5, 1]}
-            style={styles.button}
-          >
-            <TouchableOpacity onPress={handleSubmit}>
-              <Text style={{ textAlign: 'center', color: 'white', fontFamily: fonts.CircularStdMedium }}>Post</Text>
-            </TouchableOpacity>
-          </LinearGradient>
-          </KeyboardAvoidingView>
-      )}
-    </Formik>
+        </SafeAreaView>
+        )}
+      </Formik>
+    </HomeBody>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent:'flex-start',
     alignItems: 'center',
+    padding: '10%',
+    backgroundColor: '#fff',
+  },
+  card: {
     backgroundColor: 'white',
+      borderRadius: 8,
+      borderColor: '#ccc',
+      //alignItems:'center',
+      paddingVertical: 30,
+      paddingHorizontal: 25,
+      width: '100%',
+      height: '80%',
+      marginVertical: 10,
+      resizeMode: 'stretch',
   },
-  image: {
-    resizeMode: 'center',
-    width: '50%',
-    height: '20%',
+  shadowProp: {
+    shadowColor: '#171717',
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  headerText: {
+    fontFamily: fonts.CircularStdMedium,
+    fontSize: SIZES.h2,
+    color: '#660000',
+    textAlign: 'center',
+    marginVertical: 20,
+  },
+  buttonContainer: {
     marginTop: 20,
-  },
-  input: {
-    width: '80%',
-    borderWidth: 2,
-    borderColor: '#560310',
-    //padding: '2%',
-    marginBottom: '3%',
-    borderRadius: SIZES.radius,
+    width: '100%',
   },
   button: {
-    width: '80%',
     borderWidth: 1,
     borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 10,
+    padding: SIZES.radius,
     borderRadius: SIZES.radius,
     shadowOffset: { width: -2, height: 4 },
     shadowColor: 'black',
@@ -161,8 +227,11 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 6,
   },
-  
-
+  buttonText: {
+    textAlign: 'center',
+    color: 'white',
+    fontFamily: fonts.CircularStdMedium,
+  },
 });
 
 export default Post;

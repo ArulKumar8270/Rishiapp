@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import { fonts } from "../../config";
+import { colors } from 'react-native-elements';
 
 const CustomTextInput = ({ label, variant, placeholder, error, maxLength, onChangeText, value, containerStyle ,inputStyle,errorStyle,labelStyle}) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -30,9 +31,7 @@ const CustomTextInput = ({ label, variant, placeholder, error, maxLength, onChan
       <Text style={styles.characterCount}>{value ? value.length : 0}/{maxLength}</Text>
     </View>
   );
-};
-
-
+}
 const styles = StyleSheet.create({
   container: {
     //marginBottom: 20,

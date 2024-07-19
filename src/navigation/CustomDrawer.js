@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { createDrawerNavigator,DrawerContentScrollView } from '@react-navigation/drawer'
 import CompanyDetails from '../screens/companydetails'
 import Dashboard from '../screens/dashbord'
 

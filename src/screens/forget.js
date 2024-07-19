@@ -17,9 +17,9 @@ const Forget = ({ navigation }) => {
         .max(13, 'Invalid phone Number')
     }),
     onSubmit: (values, { resetForm }) => {
-      alert('Password reset link sent to ' + values.mobilenumber);
       resetForm();
-      navigation.navigate('Resetpassword')
+      navigation.navigate('Resetpassword',{values})
+      console.log(values);
     },
   });
 
@@ -65,7 +65,7 @@ const Forget = ({ navigation }) => {
         </TouchableOpacity>
       </LinearGradient>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Login',{username : formik.values.mobilenumber})} >
         <Text style={{ color: '#411004', fontFamily: 'CircularStd-Light' }}>&#60; BACK TO LOGIN</Text>
       </TouchableOpacity>
     </View>

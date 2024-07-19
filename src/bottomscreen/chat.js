@@ -1,147 +1,141 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, PermissionsAndroid, Platform, Button } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
+import React from 'react'
+import { FlatList, Image, ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { fonts } from '../../config'
+import { SIZES } from '../styles/config'
 
-const App = () => {
-  const [currentLongitude, setCurrentLongitude] = useState(null);
-  const [currentLatitude, setCurrentLatitude] = useState(null);
-  const [locationStatus, setLocationStatus] = useState('');
+const Chat = ({ navigation }) => {
+  const chatlist = [
+    {
+      key: '1',
+      image: require('../assets/zoho.png'),
+      time: '12:30 PM',
+      name: 'Sivabalan',
+      message: 'Hello! How are you?'
+    },
+    {
+      key: '2',
+      image: require('../assets/zoho.png'),
+      time: '12:30 PM',
+      name: 'Arul',
+      message: 'Hello! How are you?'
+    },
+    {
+      key: '3',
+      image: require('../assets/zoho.png'),
+      time: '12:30 PM',
+      name: 'guna',
+      message: 'Hello! How are you?'
+    },
+    {
+      key: '4',
+      image: require('../assets/zoho.png'),
+      time: '12:30 PM',
+      name: 'suriya',
+      message: 'Hello! How are you?'
+    },
+    // Add more chat objects as needed
+  ]
 
-  useEffect(() => {
-    const requestLocationPermission = async () => {
-      if (Platform.OS === 'ios') {
-        getOneTimeLocation();
-        subscribeLocationLocation();
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Access Required',
-              message: 'This App needs to Access your location',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            // To Check, If Permission is granted
-            getOneTimeLocation();
-            subscribeLocationLocation();
-          } else {
-            setLocationStatus('Permission Denied');
-          }
-        } catch (err) {
-          console.warn(err);
-          
-        }
-      }
-    };
-    requestLocationPermission();
-    return () => {
-      Geolocation.clearWatch(watchID);
-    };
-  }, []);
-
-  const getOneTimeLocation = () => {
-    setLocationStatus('Getting Location ...');
-    Geolocation.getCurrentPosition(
-      position => {
-        setLocationStatus('You are Here');
-        const { longitude, latitude } = position.coords;
-        setCurrentLongitude(longitude);
-        setCurrentLatitude(latitude);
-        fetchCityName(latitude, longitude);
-      },
-      error => {
-        setLocationStatus(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 30000,
-        maximumAge: 1000,
-      },
-    );
-  };
-
-  const fetchCityName = async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        'https://maps.googleapis.com/maps/api/geocode/json?address=' + position.latitude + ',' + position.longitude + '&key=' + 'AIzaSyBxhn_OjSzYgB52kpZprW0aONR6IfgNyBk',
-      );
-      const data = await response.json();
-      const addressComponents = data.results[0].address_components;
-      let cityName = null;
-      for (let component of addressComponents) {
-        if (component.types.includes('locality')) {
-          cityName = component.long_name;
-          break;
-        }
-      }
-      if (cityName) {
-        setLocationStatus(`You are in ${cityName}`);
-      } else {
-        setLocationStatus('City name not found');
-      }
-    } catch (error) {
-      console.error('Error fetching city name:', error);
-    }
-  };
-  const subscribeLocationLocation = () => {
-    watchID = Geolocation.watchPosition(
-      position => {
-        setLocationStatus('You are Here');
-        const { longitude, latitude } = position.coords;
-        setCurrentLongitude(longitude);
-        setCurrentLatitude(latitude);
-        fetchCityName(latitude, longitude);
-      },
-      error => {
-        setLocationStatus(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        maximumAge: 1000,
-      },
-    );
-  };
+  const chatrender = ({ item }) => (
+    <SafeAreaView style={styles.chatItem}>
+      <TouchableOpacity
+        style={styles.chatTouchable}
+        onPress={() => {navigation.navigate('ConversationScreen',{item})}}
+      >
+        <View style={styles.imageContainer}>
+          <Image source={item.image} style={styles.chatImage} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.timeText}>{item.time}</Text>
+          <Text style={styles.nameText}>{item.name}</Text>
+          <Text style={styles.messageText}>{item.message}</Text>
+        </View>
+      </TouchableOpacity>
+    </SafeAreaView>
+  )
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={{
-          uri: 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/location.png',
-        }}
-        style={{ width: 100, height: 100 }}
-      />
-      <Text style={styles.boldText}>{locationStatus}</Text>
-      <Text>Longitude: {currentLongitude || 'loading...'}</Text>
-      <Text>Latitude: {currentLatitude || 'loading...'}</Text>
-      <View style={{ marginTop: 20 }}>
-        <Button title="Refresh" onPress={getOneTimeLocation} />
+    <SafeAreaView style={styles.outerContainer}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Messages</Text>
       </View>
-      <Text style={styles.footer}>React Native Geolocation</Text>
-      <Text style={styles.footer}>www.aboutreact.com</Text>
-    </View>
-  );
-};
+      <ImageBackground source={require('../assets/Background.png')} style={styles.container}>
+        <FlatList
+          data={chatlist}
+          renderItem={chatrender}
+          keyExtractor={(item) => item.key}
+          contentContainerStyle={styles.flatliststyle}
+        />
+      </ImageBackground>
+    </SafeAreaView>
+  )
+}
+
+export default Chat
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  headerContainer: {
+    backgroundColor: '#fff',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#ccc',
+    padding: 15,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: SIZES.body1,
+    fontFamily: fonts.CircularStdBlack,
+    color: '#000',
+  },
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    backgroundColor: '#fff',
+  },
+  flatliststyle: {
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  boldText: {
-    fontSize: 25,
-    color: 'red',
-    marginVertical: 16,
-    textAlign: 'center',
+  chatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#440217',
+    width: '100%',
   },
-  footer: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: 'grey',
+  chatTouchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-});
-
-export default App;
+  imageContainer: {
+    marginRight: 15,
+  },
+  chatImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 0.5,
+    borderColor: '#ccc',
+  },
+  textContainer: {
+    flex: 1,
+  },
+  timeText: {
+    fontSize: 12,
+    color: '#D3D3D3',
+    marginBottom: 5,
+  },
+  nameText: {
+    fontSize: SIZES.h2,
+    fontFamily: fonts.CircularStdBlack,
+    color: '#fff',
+  },
+  messageText: {
+    fontSize: 14,
+    color: '#fff',
+  },
+})

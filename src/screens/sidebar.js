@@ -1,6 +1,5 @@
 // AppNavigator.js
 import React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import Dashboard from './dashbord';
 
 const Drawer = createDrawerNavigator();
