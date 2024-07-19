@@ -14,42 +14,37 @@ const validationSchema = Yup.object().shape({
 
 const Postlogin = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
-  const handleLogin=()=>{
-    navigation.navigate('Post')
-  }
+  const handleLogin = useCallback(async (values) => {
+    setLoading(true);
+    try {
+      const request = {
+        userName: values.Username,
+        password: values.Password,
+      };
+      console.log('Sending request to the server:', request);
 
-  // const handleLogin = useCallback(async (values) => {
-  //   setLoading(true);
-  //   try {
-  //     const request = {
-  //       userName: values.Username,
-  //       password: values.Password,
-  //     };
-  //     console.log('Sending request to the server:', request);
+      const response = await axios.post('https://rishijob.com/backend/api/v1/company/authenticate', request);
+      setLoading(false);
+      if (response.data.success) {
+        navigation.navigate('Post');
+      } else {
+        Alert.alert('Login Failed');
+      }
+    } catch (error) {
+      setLoading(false);
 
-  //     const response = await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request);
-  //     setLoading(false);
-  //     if (response.data.success) {
-  //       navigation.navigate('Dashboard');
-  //     } else {
-  //       navigation.navigate('Dashboard');
-  //     }
-  //   } catch (error) {
-  //     setLoading(false);
-  //     console.error('error----------------------', error);
-
-  //     if (error.response) {
-  //       console.error('Server error:', error.response.data);
-  //       Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
-  //     } else if (error.request) {
-  //       console.error('Network error:', error.request);
-  //       Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
-  //     } else {
-  //       console.error('Error:', error.message);
-  //       Alert.alert('Login Failed', 'An error occurred. Please try again.');
-  //     }
-  //   }
-  // }, [navigation]);
+      if (error.response) {
+        console.error('Server error:', error.response.data);
+        Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
+      } else if (error.request) {
+        console.error('Network error:', error.request);
+        Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
+      } else {
+        console.error('Error:', error.message);
+        Alert.alert('Login Failed', 'An error occurred. Please try again.');
+      }
+    }
+  }, [navigation]);
 
   return (
     <Formik
