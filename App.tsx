@@ -30,6 +30,8 @@ import ConversationScreen from './src/bottomscreen/conversationScreen';
 import Postlogin from './src/screens/Postlogin';
 import PostSignup from './src/screens/postSignup';
 import PostOtp from './src/screens/PostOtp';
+import CreateJob from './src/screens/createJob';
+import Jobs from './src/screens/jobs';
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
 // in App.js
@@ -58,6 +60,8 @@ const App = () => {
         <Stack.Screen name='AppliedSucsuss' component={AppliedSucsuss}/>
         <Stack.Screen name='Resetpassword' component={Resetpassword}/>
         <Stack.Screen name='ConversationScreen' component={ConversationScreen}/>
+        <Stack.Screen name="CreateJob" component={CreateJob} />
+        <Stack.Screen name="Jobs" component={Jobs} />
         {/* <Stack.Screen name='home' component={CustomDrawer}/> */}
       </Stack.Navigator>
     </NavigationContainer>

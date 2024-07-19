@@ -28,7 +28,7 @@ export default function HomeBody({
     isMainPage,
     postJobDashbord,
     mainDashbord,
-    navigation }) {
+    navigation,jobsHeader }) {
    
 
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -76,12 +76,16 @@ export default function HomeBody({
                 angleCenter={{ x: 0.5, y: 0.5 }}
                 colors={["white", "white"]} >
                     { mainDashbord &&
-                        <HomeHeader title={title} isMainPage={isMainPage} navigation={navigation} />
+                        <HomeHeader logoimage = {true} title={title} isMainPage={isMainPage} navigation={navigation} />
                     }
                 
                 { postJobDashbord &&
                     <Header title={title} isMainPage={isMainPage} navigation={navigation} />
-                }
+                }  
+                   { jobsHeader &&
+                    <Header title={title} isMainPage={isMainPage} navigation={navigation} />
+                }  
+
                 
                 {children}
                 {/* <ScrollView>

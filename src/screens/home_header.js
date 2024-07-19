@@ -36,7 +36,7 @@ import { SideMenuIcon, ThumbsDown, Thumbsup } from "../assets/svg";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { fonts } from "../../config";
 import { color } from "react-native-elements/dist/helpers";
-export default function HomeHeader({ title, navigation, isMainPage }) {
+export default function HomeHeader({ title, navigation, isMainPage,logoimage }) {
   const [navDraw, setNavDraw] = useState(false);
   const [imageLiked, setImageLiked] = useState(false);
   const [imageDislike, setImageDislike] = useState(false);
@@ -164,13 +164,16 @@ export default function HomeHeader({ title, navigation, isMainPage }) {
       </ScrollView>
     </Overlay>
 
-      <View style={styles.logoContainer}>
-        <View>
-          <TouchableOpacity onPress={()=>navigation.navigate('Profile')}>
-          <Image  source={ require('../assets/dp.png')} style={styles.logoImage}/>
-          </TouchableOpacity>
-          </View>
-      </View>
+{logoimage &&
+ <View style={styles.logoContainer}>
+ <View>
+   <TouchableOpacity onPress={()=>navigation.navigate('Profile')}>
+   <Image  source={ require('../assets/dp.png')} style={styles.logoImage}/>
+   </TouchableOpacity>
+   </View>
+</View>
+}
+     
     </View>
   );
 } 
