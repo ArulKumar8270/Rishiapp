@@ -258,7 +258,7 @@ const jobDetailsApi = useCallback(async (values) => {
   setLoading(true);
   try {
     const response = await axios.get('https://rishijob.com/backend/api/v1/jobs');
-    
+    console.log('=================',response.data)
     setDataValue(response.data.data.data)
     setLoading(false);
   } catch (error) {

@@ -35,15 +35,16 @@ const Jobs = ({navigation,route}) => {
     <TouchableOpacity style={styles.item} onPress={()=>{
     }
         }>
+          {console.log('================8888',item)}
         <View style={{ flexDirection: 'row',justifyContent:'space-between' }}>
           <View style={{width:'90%'}}>
             {/* <Text style={styles.title}>{item.title}</Text> */}
             <Text style={styles.roll}>{item.jobTitle}</Text>
-            <Text style={styles.company}>{item.companyName}</Text>
+            <Text style={styles.company}>{item.jobCategory}</Text>
             <Text style={styles.details}>{item.companyName}</Text>
             <View style={styles.description}><FontAwesomeIcon icon={faLocationDot} color='#808B96'/><Text style={styles.details}>{item.jobLocation}</Text></View>
-            <View style={styles.description}><FontAwesomeIcon icon={faSuitcase} color='#808B96'/><Text style={styles.details}>{item.experience}</Text></View>
-            <View style={styles.description}><FontAwesomeIcon icon={faWallet} color='#808B96'/><Text style={styles.details}>{item.salarydetails}</Text></View>
+            <View style={styles.description}><FontAwesomeIcon icon={faSuitcase} color='#808B96'/><Text style={styles.details}>{item.experince}</Text></View>
+            <View style={styles.description}><FontAwesomeIcon icon={faWallet} color='#808B96'/><Text style={styles.details}>{item.salaryFrom + "-" + item.salaryTo}</Text></View>
           </View>
           <View style={{flexDirection:'column', justifyContent:'space-between'}}>
           
