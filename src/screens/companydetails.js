@@ -111,24 +111,25 @@ const handleApplyjob = useCallback(async () => {
   }
   const jobDetail=[{
     id:1,
-    experience:params.item.experience,
-    Opennings:params.item.Opennings,
+    experience:params.item.experince || "-",
+    Opennings:params.item.hiringCandidates,
     location:params.item.jobLocation,
-    salaryPA:params.item.salaryPA,
-    interviewType:params.item.interviewType,
+    salaryPA:params.item.salaryFrom +" " +"To" +" "  +params.item.salaryTo,
+    interviewType:params.item.jobType,
     MustSkill:params.item.MustSkill,
-    BasicSkills:params.item.BasicSkills
+    BasicSkills:params.item.jobSkills || "-"
   }]
   const rendardata=({item})=>(
     <SafeAreaView style={styles.basicitem}>
       <View>
+        {console.log('============-------------=',item)}
         <View style={{flexDirection:'row',marginVertical:5}}><SuiteCaseIcon height={20} width={20} color={'#D98880'}/><Text style={styles.JobRollItems}>{item.experience}</Text></View>
         <View style={{flexDirection:'row',marginVertical:5}}><MyIcon height={20} width={20} color={'#D98880'}/><Text style={styles.JobRollItems}>{item.Opennings}</Text></View>
         <View style={{flexDirection:'row',marginVertical:5}}><LocationIcon height={23} width={23} color={'#D98880'}/><Text style={styles.JobRollItems}>{item.location}</Text></View>
         <View style={{flexDirection:'row',marginVertical:5}}><WalletIcon height={20} width={20} color={'#D98880'}/><Text style={styles.JobRollItems}>{item.salaryPA}</Text></View>
         <View style={{flexDirection:'row',marginVertical:5}}><PinIcon height={20} width={20} color={'#D98880'}/><Text style={styles.JobRollItems}>{item.interviewType}</Text></View>
-        <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Must Skill</Text>
-        <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.MustSkill}</Text>
+        {/* <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Must Skill</Text>
+        <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.MustSkill}</Text> */}
         <Text style={{fontFamily:fonts.CircularStdBlack,fontSize:SIZES.body3,color:'#000'}}>Basic Skills</Text>
         <Text style={[styles.JobRollItems,{marginVertical:4}]}>{item.BasicSkills}</Text>
       </View>
@@ -137,7 +138,7 @@ const handleApplyjob = useCallback(async () => {
   const discription=[{
     id:2,
     label:'What You will do',
-    Discription:params.item.description
+    Discription:params.item.jobdesCription
   }]
   const discriptionrender=({item})=>(
     <SafeAreaView style={styles.basicitem}>
@@ -152,8 +153,8 @@ const handleApplyjob = useCallback(async () => {
     IndustryType:params.item.IndustryType,
     Department:params.item.Department,
     Role:params.item.Role,
-    EmploymentType:params.item.EmploymentType,
-    Education:params.item.Education
+    EmploymentType:params.item.jobType,
+    Education:params.item.Education || '-'
   }]
   const jobdatarender=({item})=>(
     <SafeAreaView style={styles.basicitem}>

@@ -21,197 +21,50 @@ import Geolocation from '@react-native-community/geolocation';
 import { err } from 'react-native-svg';
 import axios from 'axios';
 
-const Dashboard = ({ navigation }) => {
+const Dashboard = ( {navigation,route }) => {
+  const { params } = route;
   const searchsheet=useRef();
   const windowHeight = Dimensions.get('window').height;
   const [dataValue, setDataValue] = useState(null)
-  const initialData = [
-    {
-      key: '1',
-      title: 'Item 1',
-      Role:'UI/UX designer',
-      company: 'Zoho',
-      experience: '3 years',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      Opennings:'No of oppenings',
-      location:'Chennai',
-      salaryPA:'20,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'html,css,javascript,bootstrap',
-      BasicSkills:'Knowledge of front end frameworks/libraries : Next.js,React.js , JavaScript/CSResponsive design to support different deviceKnowledge of Rest APICI/CD experience',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
 
-    {
-      key: '2',
-      title: 'Item 2',
-      Role: 'Front-end devloper',
-      company: 'Zoho',
-      experience: '3 years',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      Opennings:'No of oppenings',
-      location:'madurai',
-      salaryPA:'00,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'MustSkill',
-      BasicSkills:'Basicskills',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
-    {
-      key: '3',
-      title: 'Item 3',
-      Role: 'React devloper',
-      company: 'Zoho',
-      experience: '3 years',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      Opennings:'No of oppenings',
-      location:'banglore',
-      salaryPA:'00,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'MustSkill',
-      BasicSkills:'Basicskills',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
-    {
-      key: '4',
-      title: 'Item 4',
-      Role: 'react-native devloper',
-      company: 'Zoho',
-      experience: '3 years',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      Opennings:'No of oppenings',
-      location:'chennai',
-      salaryPA:'00,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'MustSkill',
-      BasicSkills:'Basicskills',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
-    {
-      key: '5',
-      title: 'Item 5',
-      Role: 'Digital Marketing',
-      company: 'Zoho',
-      experience: '3 years',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      Opennings:'No of oppenings',
-      location:'banglore',
-      salaryPA:'00,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'MustSkill',
-      BasicSkills:'Basicskills',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
-    {
-      key: '6',
-      title: 'Item 6',
-      Role: 'web design',
-      experience: '3 years',
-      company: 'Zoho',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      experience:'experience',
-      Opennings:'No of oppenings',
-      location:'chennai',
-      salaryPA:'00,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'MustSkill',
-      BasicSkills:'Basicskills',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
-    {
-      key: '7',
-      title: 'Item 7',
-      Role: 'sales engineer',
-      experience: '3 years',
-      company: 'Zoho',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',
-      experience:'experience',
-    Opennings:'No of oppenings',
-    location:'coaimbatore',
-    salaryPA:'00,00,000',
-    interviewType:'Walk-in',
-    MustSkill:'MustSkill',
-    BasicSkills:'Basicskills',
-    IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    },
-    {
-      key: '8',
-      title: 'Item 8',
-      Role: 'project associator',
-      experience: '3 years',
-      company: 'Zoho',
-      image: require('../assets/zoho.png'),
-      rateing: require('../assets/rate.png'),
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-      salarydetails:'3-4 Lacs PA',experience:'experience',
-      Opennings:'No of oppenings',
-      location:'ooty',
-      salaryPA:'00,00,000',
-      interviewType:'Walk-in',
-      MustSkill:'MustSkill',
-      BasicSkills:'Basicskills',
-      IndustryType:'IT services & Consulting',
-      Department:'Role of Department',
-      EmploymentType:'Fulltime',
-      Education:'MCA ,Msc,computer science, BE computer sceience'
-    }
-  ];
-  // const validData = [{ key: '1', title: 'Job Applied', color: '#2E86C1' },
-  // { key: '2', title: 'Interview', color: '#F06292' }]
 
   const [data, setData] = useState(dataValue);
   const [searchLocation, setSearchLocation] = useState('');
-  const [searchText, setSearchText] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [fullTimeCheckBox, setFullTimeCheckBox] = useState(false);
-  const [partTimeCheckBox, setPartTimeCheckBox] = useState(false);
-  const [fullPartTimeCheckBox, setFullPartTimeCheckBox] = useState(false);
   const [isLoading, setLoading] = useState(true);
   const [filterData, setFilterData]=useState(dataValue)
   const [currentLocation, setCurrentLocation] = useState(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
+
+  useEffect(() => {
+    jobDetailsApi()
+  },[])
+const jobDetailsApi = useCallback(async (values) => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://rishijob.com/backend/api/v1/courses');
+      console.log('=================',response.data.data)
+      setDataValue(response.data.data.data)
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+     
+  
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error('Server error:', error.response.data);
+        Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error('Network error:', error.request);
+        Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
+      } else {
+        // Something else happened in setting up the request
+        console.error('Error:', error.message);
+        Alert.alert('Login Failed', 'An error occurred. Please try again.');
+      }
+    }
+  }, [navigation]);
   // Function to get permission for location
   const requestLocationPermission = async () => {
     try {
@@ -254,45 +107,8 @@ const getCurrentLocation = () => {
     );
 };
 
-const jobDetailsApi = useCallback(async (values) => {
-  setLoading(true);
-  try {
-    const response = await axios.get('https://rishijob.com/backend/api/v1/jobs');
-    console.log('=================',response.data)
-    setDataValue(response.data.data.data)
-    setLoading(false);
-  } catch (error) {
-    setLoading(false);
-   
 
-    if (error.response) {
-      // Server responded with a status other than 200 range
-      console.error('Server error:', error.response.data);
-      Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
-    } else if (error.request) {
-      // Request was made but no response received
-      console.error('Network error:', error.request);
-      Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
-    } else {
-      // Something else happened in setting up the request
-      console.error('Error:', error.message);
-      Alert.alert('Login Failed', 'An error occurred. Please try again.');
-    }
-  }
-}, [navigation]);
-useEffect(() => {
-  jobDetailsApi()
-},[])
 
-const openMaps = () => {
-    if (currentLocation) {
-        const { latitude, longitude } = currentLocation;
-        const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
-        Linking.openURL(url);
-    } else {
-        Alert.alert('Location not available', 'Please enable location to use this feature.');
-    }
-};
 
 //function of search
   const handleSearch = (text,location) => {
@@ -314,11 +130,7 @@ const openMaps = () => {
     searchsheet.current.close()
   };
 
-  const renderdata = ({ item }) => (
-    <View style={styles.validcontainer}>
-      <Text style={[styles.valid, { backgroundColor: item.color }]}>{item.title}</Text>
-    </View>
-  )
+
   useEffect(() => {
 
     const timer = setTimeout(() => {
@@ -339,13 +151,13 @@ const openMaps = () => {
           {/* <Text style={styles.title}>{item.title}</Text> */}
           <Text style={styles.roll}>{item.jobTitle}</Text>
           <Text style={styles.company}>{item.companyName}</Text>
-          <Text style={styles.details}>{item.companyName}</Text>
+          <Text style={styles.details}>{item.jobCategory}</Text>
           <View style={styles.description}><FontAwesomeIcon icon={faLocationDot} color='#808B96'/><Text style={styles.details}>{item.jobLocation}</Text></View>
-          <View style={styles.description}><FontAwesomeIcon icon={faSuitcase} color='#808B96'/><Text style={styles.details}>{item.experience}</Text></View>
-          <View style={styles.description}><FontAwesomeIcon icon={faWallet} color='#808B96'/><Text style={styles.details}>{item.salarydetails}</Text></View>
+          <View style={styles.description}><FontAwesomeIcon icon={faSuitcase} color='#808B96'/><Text style={styles.details}>{item.experince || "-"}</Text></View>
+          <View style={styles.description}><FontAwesomeIcon icon={faWallet} color='#808B96'/><Text style={styles.details}>{item.salaryFrom + " " +"to" +  " "+item.salaryTo}</Text></View>
         </View>
         <View style={{flexDirection:'column', justifyContent:'space-between'}}>
-          <Image source={item.image} style={styles.logo} />
+          <Image source={item.companyLogo} style={styles.logo} />
           <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
             <TouchableOpacity><View><FontAwesomeIcon icon={faShareNodes} /></View></TouchableOpacity>
             <TouchableOpacity><View><BookmarkIcon height={20} width={20} color={'#2C3E50'}/></View></TouchableOpacity>
@@ -406,9 +218,9 @@ const openMaps = () => {
 
       
       <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10,width:'94%'}}>
-      <View style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:35,backgroundColor:"#440217"}}>
+      <TouchableOpacity onPress={() => navigation.navigate('JobAppliedScreen')} style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:35,backgroundColor:"#440217"}}>
           <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Job Applied</Text>
-        </View>
+        </TouchableOpacity>
         <View style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:43,backgroundColor:"#440217"}}>
           <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Interview</Text>
         </View>

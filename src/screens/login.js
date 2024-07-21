@@ -32,11 +32,11 @@ const Login = ({ navigation }) => {
       const response = await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request);
       setLoading(false);
       if (response.data.success) {
-        navigation.navigate('Dashbord');
+        navigation.navigate('Dashbord',{request});
       }
       else{
         //Alert.alert('Error', response.data.error);
-        navigation.navigate('Dashbord');
+        navigation.navigate('Dashbord',{request});
       }
     } catch (error) {
       setLoading(false);
