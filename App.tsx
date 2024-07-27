@@ -33,6 +33,7 @@ import PostOtp from './src/screens/PostOtp';
 import CreateJob from './src/screens/createJob';
 import Jobs from './src/screens/jobs';
 import JobAppliedScreen from './src/screens/appliedJob';
+import AppliedTo from './src/screens/ApplyedTo';
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
 // in App.js
@@ -64,6 +65,7 @@ const App = () => {
         <Stack.Screen name="CreateJob" component={CreateJob} />
         <Stack.Screen name="Jobs" component={Jobs} />
         <Stack.Screen name='JobAppliedScreen' component={JobAppliedScreen}/>
+        <Stack.Screen name='AppliedTo' component={AppliedTo}/>
       </Stack.Navigator>
     </NavigationContainer>
     

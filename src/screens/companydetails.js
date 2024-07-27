@@ -12,49 +12,49 @@ import axios from 'axios'
 const CompanyDetails = ({ navigation,route }) => {
 const {params} = route;
 const [loading, setLoading] = useState(false);
-const handleApplyjob = useCallback(async () => {
-  setLoading(true);
-  try {
-    let request = {
-      userName : params.item.userName,
-      jobTitle : params.item.jobTitle,
-      jobCategory : params.item.jobTitle,
-      companyName :params.item.companyName,
-      companyId : params.item.companyId,
-      jobStatus : params.item.jobStatus,
-      name : params.item.name,
-      phoneNumber : params.item.phoneNumber,
-      email : params.item.email,
-      jobLocation : params.item.jobLocation,
-      experienceType : params.item.experienceType,
-      experience :params.item.experience,
-      oldCompanyName : params.item.oldCompanyName,
-      resume :params.item.resume
-    };
-    const response = await axios.post('https://rishijob.com/backend/api/v1/jobs',request)
-    if(response.data.success)
-      {
-        navigation.navigate('AppliedSucsuss')
-      }
-    setLoading(false)
-  } catch (error) {
-    setLoading(false);
-    console.error('error----------------------', error);
-    if (error.response) {
-      // Server responded with a status other than 200 range
-      console.error('Server error:', error.response.data);
-      Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
-    } else if (error.request) {
-      // Request was made but no response received
-      console.error('Network error:', error.request);
-      Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
-    } else {
-      // Something else happened in setting up the request
-      console.error('Error:', error.message);
-      Alert.alert('Login Failed', 'An error occurred. Please try again.');
-    }
-  }
-}, [navigation]);
+// const handleApplyjob = useCallback(async () => {
+//   setLoading(true);
+//   try {
+//     let request = {
+//       userName : params.item.userName,
+//       jobTitle : params.item.jobTitle,
+//       jobCategory : params.item.jobTitle,
+//       companyName :params.item.companyName,
+//       companyId : params.item.companyId,
+//       jobStatus : params.item.jobStatus,
+//       name : params.item.name,
+//       phoneNumber : params.item.phoneNumber,
+//       email : params.item.email,
+//       jobLocation : params.item.jobLocation,
+//       experienceType : params.item.experienceType,
+//       experience :params.item.experience,
+//       oldCompanyName : params.item.oldCompanyName,
+//       resume :params.item.resume
+//     };
+//     const response = await axios.post('https://rishijob.com/backend/api/v1/jobs',request)
+//     if(response.data.success)
+//       {
+//         navigation.navigate('AppliedSucsuss')
+//       }
+//     setLoading(false)
+//   } catch (error) {
+//     setLoading(false);
+//     console.error('error----------------------', error);
+//     if (error.response) {
+//       // Server responded with a status other than 200 range
+//       console.error('Server error:', error.response.data);
+//       Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
+//     } else if (error.request) {
+//       // Request was made but no response received
+//       console.error('Network error:', error.request);
+//       Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
+//     } else {
+//       // Something else happened in setting up the request
+//       console.error('Error:', error.message);
+//       Alert.alert('Login Failed', 'An error occurred. Please try again.');
+//     }
+//   }
+// }, [navigation]);
   const renderHeader = () => {
     return (
       <ImageBackground source={require('../assets/Background.png')}
@@ -260,7 +260,7 @@ const [index, setIndex] = useState(0);
           locations={[0, 0.5, 1]}
           style={styles.button}
         >
-          <TouchableOpacity onPress={()=>handleApplyjob()}>
+          <TouchableOpacity  onPress={()=>navigation.navigate('AppliedTo')}>
             <Text style={{ textAlign: 'center', color: 'white', fontFamily: fonts.CircularStdMedium }}>Apply</Text>
           </TouchableOpacity>
         </LinearGradient>

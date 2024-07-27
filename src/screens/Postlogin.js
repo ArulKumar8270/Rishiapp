@@ -24,6 +24,7 @@ const Postlogin = ({ navigation }) => {
       console.log('Sending request to the server:', request);
 
       const response = await axios.post('https://rishijob.com/backend/api/v1/company/authenticate', request);
+      console.log(response.data);
       setLoading(false);
       if (response.data.success) {
         navigation.navigate('Post');

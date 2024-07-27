@@ -37,10 +37,11 @@ import {fonts} from '../../config';
 import ImagePicker from 'react-native-image-crop-picker';
 import Basicdetails from './profileitems.js/basicdetails';
 import DropDownPicker from 'react-native-dropdown-picker';
-import Dropdown from '../assets/components/custom_dropdown';
+import { Dropdown } from 'react-native-element-dropdown';
 import CustomDropDown from '../assets/components/custom_dropdown';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import DocumentPicker from 'react-native-document-picker';
+import axios from 'axios';
 //import { TabView, TabBar } from 'react-native-tab-view';
 
 const Profile = ({navigation}) => {
@@ -50,30 +51,32 @@ const Profile = ({navigation}) => {
   const windowHeight = Dimensions.get('window').height;
   //detail
   //
-  const [userData, setUserData] = useState([
-    {
-      id: 1,
-      Name: 'name',
-      image: require('../assets/dp.png'),
-      description:
-        ' Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed consequat, diam eget pellentesque luctus.',
-    },
+  const [userData, setUserData] = useState([{
+    id:1,
+    Firstname:'Firstname',
+    Lastname:'Lastname',
+    description:'headline'
+  }
   ]);
   const [selectedImage, setSelectedImage] = useState();
   const [width, setWidth] = useState();
   const [height, setHeight] = useState();
   const [formValues, setFormValues] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(null);
-  // Function to update user data
-  const updateUser = (id, name, headline) => {
+  const [selectedOption, setSelectedOption] = React.useState('fresher');
+  const [resume, setResume] = React.useState(null);
+  //----------------------------------------- Function to update user data---------------------------------------------------//
+  const updateUser = (id, Firstname,  Lastname) => {
     const updatedData = userData.map(item => {
       if (item.id === id) {
-        return {...item, Name: name, description: headline};
+        return {...item,Firstname: Firstname,  Lastname:  Lastname};
       }
       return item;
     });
+    console.log('update---------------999999---------------dData',updatedData)
+
     setUserData(updatedData);
   };
+
 
   //open gallery function
   const Opengallery = () => {
@@ -81,6 +84,7 @@ const Profile = ({navigation}) => {
       Pictureref.current.open();
     }
   };
+  console.log('==================================',userData)
 
   //function set profile picture
   const handleImagePicker = () => {
@@ -139,42 +143,78 @@ const Profile = ({navigation}) => {
     }
   };
   // Function to handle form submission
-  const handleProfileSubmit = values => {
-    // Handle rfom submissionhandleSubmit(values);
+  const handleProfileSubmit = async values => {
+    console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',values)
+    try {
+      const response = axios.post(
+        `https://rishijob.com/backend/api/v1/customers/${values.id}`,
+      );
+      console.log('-------------------------', response);
+      
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
     console.log(values);
     bottomSheetRef.current.close();
-    // Optionally, you can call bottomSheetRef.current.close() to close the bottom sheet after submission
+   
   };
-  const handleDetailSubmit = values => {
-    // Handle rfom submissionhandleSubmit(values);
-    Detailref.current.close();
-    console.log(
-      '---------------------Details-------------------------',
-      values,
-    );
-
-    // Optionally, you can call bottomSheetRef.current.close() to close the bottom sheet after submission
+ 
+  const handleResumeUpload = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf],
+      });
+      setResume(res);
+      console.log('----------------------------------------------------------------',res);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('User cancelled the picker');
+      } else {
+        throw err;
+      }
+    }
   };
+  const Gender = [
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+    { label: 'Transgender', value: 'Transgender' },
+  ];
 
   const validationSchema = yup.object().shape({
-    name: yup.string().required('Enter your name'),
-    headline: yup.string().required('Enter your profile headline'),
+  
+    Firstname: yup.string().required('Enter your Firstname'),
+    Lastname: yup.string().required('Enter your Lasttname'),
+    qualification: yup.string().required('Enter your Qualification'),
+    gender: yup.string().required('Enter your Gender'),
+    headline: yup.string().required('Headline is Required'),
+    mobileNumber: yup
+    .string()
+    .required('Mobile number is required')
+    .matches(/^\d+$/, 'Mobile number must contain only numbers')
+     .max(10, 'Mobile number must be 10 digits'),
+    email: yup.string().email('Invalid email').required('Email is required'),
+    obTitle:selectedOption === 'experience' ? yup.string().required('Job Title is required') : yup.string(),
+    experience:  selectedOption === 'experience' ? yup.number().required('Experience Years is required') : yup.number(),
+    companyName:selectedOption === 'experience' ? yup.string().required('Company Name is required') : yup.string(),
+    totalSalary:selectedOption === 'experience' ? yup.string().required('salary is required') : yup.string(),
   });
 
   const profilitems = ({item, updateUser}) => (
+   
     <ImageBackground
       source={require('../assets/Background.png')}
       style={{
         padding: 15,
         shadowColor: '#000',
         shadowOffset: {
-          height: 4,
+          height: 10,
           width: 10,
         },
         shadowOpacity: 0.5,
         shadowRadius: 4,
         // Apply elevation for Androi
       }}>
+        { console.log('----------item-------',item)}
       <View
         style={{
           alignItems: 'center',
@@ -189,7 +229,9 @@ const Profile = ({navigation}) => {
           }
           style={styles.dp}
         />
-        <Text style={styles.profilename}>{item.Name}</Text>
+        <>{item.Firstname?<Text style={styles.profilename}>{item.Firstname}</Text>:<Text style={styles.profilename}>FirstName</Text>}</>
+        
+        <Text style={styles.profilename}>{item.Lastname}</Text>
         <TouchableOpacity
           style={{marginTop: -17, marginVertical: 10, marginLeft: 'auto'}}
           onPress={() => bottomSheetRef.current.open()}>
@@ -211,12 +253,27 @@ const Profile = ({navigation}) => {
           },
         }}>
         <Formik
-          initialValues={{name: '', headline: ''}}
+          initialValues={{
+            Firstname: "",
+            Lastname: '',
+            qualification: '',
+            gender: '',
+            headline: '',
+            mobileNumber: '',
+            email: '',
+            jobTitle: '',
+            experience: '',
+            companyName: '',
+            totalSalary: '',
+          }}
           validationSchema={validationSchema}
           onSubmit={(values, actions) => {
+            console.log('-----------------------',values)
+            //handleSubmit(values)
             handleProfileSubmit(values);
-            updateUser(item.id, values.name, values.headline); // Update user data
+            updateUser(item.id,values); // Update user data
             actions.setSubmitting(false);
+            bottomSheetRef.current.close();
           }}>
           {({
             handleChange,
@@ -227,448 +284,192 @@ const Profile = ({navigation}) => {
             touched,
             errors,
           }) => (
-            <View style={styles.Rbcontainer}>
-              <View>
-                <Text style={styles.rbSheetheading}>Profile picture</Text>
-                <Text style={styles.rbsheetcontent}>
-                  profile with photo was has 40% higher chances of getting
-                  noticed by recruiters
-                </Text>
-                <View style={{alignItems: 'center', marginVertical: 20}}>
-                  <TouchableOpacity activeOpacity={1} onPress={Opengallery}>
-                    <Image
-                      source={
-                        selectedImage
-                          ? {uri: selectedImage}
-                          : require('../assets/dp.png')
-                      }
-                      style={[styles.dp, {height: 100, width: 100}]}
-                    />
-                  </TouchableOpacity>
+            <ScrollView>
+              <View style={styles.Rbcontainer}>
+                <View>
+                  <Text style={styles.rbSheetheading}>Profile picture</Text>
+                  <Text style={styles.rbsheetcontent}>
+                    profile with photo was has 40% higher chances of getting
+                    noticed by recruiters
+                  </Text>
+                  <View style={{alignItems: 'center', marginVertical: 20}}>
+                    <TouchableOpacity activeOpacity={1} onPress={Opengallery}>
+                      <Image
+                        source={
+                          selectedImage
+                            ? {uri: selectedImage}
+                            : require('../assets/dp.png')
+                        }
+                        style={[styles.dp, {height: 100, width: 100}]}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-              <Text style={styles.rbSheetheading}>Introduction</Text>
-              <Text style={styles.rbsheetcontent}>
-                Introduce yourself to the recruiters
-              </Text>
-              <CustomTextInput
-                variant="underline"
-                labelStyle={{fontFamily: fonts.CircularStdLight}}
-                label={'Name'}
-                //placeholder="Enter your name"
-                onChangeText={value => {
-                  console.log(
-                    '------------------------------------------',
-                    value,
-                  );
-                  setFieldValue('name', value);
-                  handleChange('name');
-                }}
-                // onBlur={handleBlur('name')}
-                error={touched.name && errors.name}
-                errorStyle={{fontFamily: fonts.CircularStdBook}}
-                maxLength={37}
-                value={values.name}
-                containerStyle={styles.TextinputContainer}
-                inputStyle={{fontFamily: fonts.CircularStdBook}}
-              />
-              <CustomTextInput
-                variant="underline"
-                labelStyle={{fontFamily: fonts.CircularStdLight}}
-                label={'Profile Headline'}
-                //placeholder="Enter your profile headline"
-                onChangeText={handleChange('headline')}
-                // onBlur={handleBlur('headline')}
-                error={touched.headline && errors.headline}
-                errorStyle={{fontFamily: fonts.CircularStdBook}}
-                maxLength={100}
-                value={values.headline}
-                containerStyle={styles.TextinputContainer}
-                inputStyle={{fontFamily: fonts.CircularStdBook}}
-              />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingHorizontal: 30,
-                  marginVertical: 40,
-                  marginTop: 'auto',
-                }}>
+                <SafeAreaView style={[styles.card, styles.shadowProp]}>
+                <Text style={styles.rbSheetheading}>Introduction</Text>
+                <Text style={styles.rbsheetcontent}>
+                  Introduce yourself to the recruiters
+                </Text>
+                <CustomTextInput
+                  variant="underline"
+                  labelStyle={{fontFamily: fonts.CircularStdLight}}
+                  label={'First Name'}
+                  //placeholder="Enter your name"
+                  onChangeText={value => {
+                    setFieldValue('name', value);
+                    handleChange('name');
+                  }}
+                  // onBlur={handleBlur('name')}
+                  error={touched.name && errors.name}
+                  errorStyle={{fontFamily: fonts.CircularStdBook}}
+                  maxLength={37}
+                  value={values.name}
+                  inputStyle={{fontFamily: fonts.CircularStdBook}}
+                />
+                <CustomTextInput
+                  variant="underline"
+                  labelStyle={{fontFamily: fonts.CircularStdLight}}
+                  label={'Last Name'}
+                  //placeholder="Enter your profile headline"
+                  onChangeText={handleChange('Lastname')}
+                   onBlur={handleBlur('Lastname')}
+                  error={touched.Lastname && errors.Lastname}
+                  errorStyle={{fontFamily: fonts.CircularStdBook}}
+                  maxLength={100}
+                  value={values.Lastname}
+                  inputStyle={{fontFamily: fonts.CircularStdBook}}
+                />
+                <CustomTextInput
+                  variant="underline"
+                  labelStyle={{fontFamily: fonts.CircularStdLight}}
+                  label={'Profile Headline'}
+                  //placeholder="Enter your profile headline"
+                  onChangeText={handleChange('headline')}
+                   onBlur={handleBlur('headline')}
+                  error={touched.headline && errors.headline}
+                  errorStyle={{fontFamily: fonts.CircularStdBook}}
+                  maxLength={100}
+                  value={values.headline}
+                  inputStyle={{fontFamily: fonts.CircularStdBook}}
+                />
+                <CustomTextInput
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  label={'Email'}
+                  value={values.email}
+                  keyboardType="email-address"
+                  error={touched.email && errors.email}
+                  errorStyle={{fontFamily: fonts.CircularStdBook}}
+                  maxLength={50}
+                  labelStyle={{fontFamily: fonts.CircularStdLight}}
+                  inputStyle={{fontFamily: fonts.CircularStdBook}}
+                />
+                <View>
+             <Text style={{fontFamily:fonts.CircularStdBook, color:'#3498DB',marginBottom:5}}>Gender</Text>
+             <Dropdown
+               data={Gender}
+               labelField="label"
+               valueField="value"
+               value={values.gender}
+
+               onChange={item => setFieldValue('gender', item.value)}
+               containerStyle={styles.dropdown}
+               placeholder="Select gender"
+             />
+             <View style={{borderBottomWidth:1, borderBlockColor:'#ccc',marginVertical:10,marginBottom:20}}>              
+             </View>
+             {touched.gender && errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
+           </View>
+               <CustomTextInput
+                  variant="underline"
+                  labelStyle={{fontFamily: fonts.CircularStdLight}}
+                  label={'Qualification'}
+                  //placeholder="Enter your profile headline"
+                  onChangeText={handleChange('qualification')}
+                  onBlur={handleBlur('qualification')}
+                  error={touched.qualification && errors.qualification}
+                  errorStyle={{fontFamily: fonts.CircularStdBook}}
+                  maxLength={100}
+                  value={values.qualification}
+                  inputStyle={{fontFamily: fonts.CircularStdBook}}
+                />
                 <TouchableOpacity
-                  onPress={() => bottomSheetRef.current.close()}>
-                  <Text
-                    style={{
-                      fontFamily: fonts.CircularStdMedium,
-                      color: '#0277BD',
-                      marginTop: 13,
-                    }}>
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                  <Text
-                    style={{
-                      fontFamily: fonts.CircularStdMedium,
-                      color: '#fff',
-                    }}>
-                    Save
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <RBSheet
-                ref={Pictureref}
-                height={200}
-                openDuration={250}
-                customStyles={{
-                  container: {
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                  },
-                }}>
-                <View
-                  style={[
-                    styles.Rbcontainer,
-                    {justifyContent: 'space-between'},
-                  ]}>
-                  <TouchableOpacity onPress={handleImagePicker}>
-                    <View style={{flexDirection: 'row'}}>
-                      <GalleryIcon height={28} width={28} />
-                      <Text style={styles.imagepicker}>
-                        Choose from Library
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleCameraPicker}>
-                    <View style={{flexDirection: 'row'}}>
-                      <CameraIcon height={25} width={25} />
-                      <Text style={styles.imagepicker}>Take a Photo</Text>
-                    </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={handleCropImage}>
-                    <View style={{flexDirection: 'row'}}>
-                      <CropIcon height={25} width={25} />
-                      <Text style={styles.imagepicker}>Crop Image</Text>
-                    </View>
+        style={styles.uploadButton}
+        onPress={handleResumeUpload}>
+        <Text style={styles.uploadButtonText}>
+          {resume ? resume[0].name : 'Upload Resume'}
+        </Text>
+      </TouchableOpacity>
+                <View style={styles.radioContainer}>
+                  <TouchableOpacity
+                    style={styles.radioButton}
+                    onPress={() => setSelectedOption('experience')}>
+                    {selectedOption === 'experience' ? (
+                      <Text style={styles.radioTextFocus}>Experience</Text>
+                    ) : (
+                      <Text style={styles.radioText}>Experience</Text>
+                    )}
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => {
-                      setSelectedImage(null);
-                      Pictureref.current.close();
-                    }}>
-                    <View style={{flexDirection: 'row'}}>
-                      <RemoveIcon height={25} width={25} color={'red'} />
-                      <Text style={[styles.imagepicker, {color: 'red'}]}>
-                        Remove
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </RBSheet>
-            </View>
-          )}
-        </Formik>
-      </RBSheet>
-    </ImageBackground>
-  );
-
-  //basic details :
-  const [basicDetails, setBasicDetails] = useState([
-    {
-      id: 2,
-      label: 'Basic details',
-      jobType: 'Work Status',
-      location: 'chennai',
-      email: 'dummy@gmail.com',
-      mobilenumber: 1234567890,
-      resume:'dummy.pdf'
-    },
-  ]);
-  //-------------------update detail--------------------------
-  const updateDetails = (id, currentCity, email, mobilenumber, workStatus, resume) => {
-    const updatedDetailsData = basicDetails.map(item => {
-      if (item.id === id) {
-        return {
-          ...item,
-          label: 'Basic details',
-          jobType: workStatus,
-          location: currentCity,
-          email: email,
-          mobilenumber: mobilenumber,
-        };
-      }
-      return item;
-    });
-
-    setBasicDetails(updatedDetailsData);
-  };
-  //-----------------------------------------------------------
-  const [selectedAvailability, setSelectedAvailability] = useState('');
-  const availabilityOptions = [
-    {label: '15 days or less', value: '15 days or less'},
-    {label: '1 month', value: '1 month'},
-    {label: '2 months', value: '2 months'},
-    {label: '3 months', value: '3 months'},
-    {label: 'more than 3 months', value: 'more than 3 months'},
-  ];
-  //------------------freshers and experience ckeck function---------------------------
-
-  const [isFreshersChecked, setFreshersChecked] = useState(false);
-  const [isExperienceChecked, setExperienceChecked] = useState(false);
-  const [fileResponse, setFileResponse] = useState(null);
-
-  const handleFreshersCheck = () => {
-    setFreshersChecked(true);
-    setExperienceChecked(false);
-  };
-
-  const handleExperienceCheck = () => {
-    setFreshersChecked(false);
-    setExperienceChecked(true);
-  };
-  {
-    /*------------------------------uploade resume---------------------------------*/
-  }
-  const handleDocumentSelection = async () => {
-    try {
-      const response = await DocumentPicker.pick({
-        type: [DocumentPicker.types.pdf],
-      });
-
-      setFileResponse(response);
-      console.log(response);
-    } catch (err) {
-   
-      if (DocumentPicker.isCancel(err)) {
-        console.log('User cancelled the document picker');
-      } else {
-        throw err;
-      }
-    }
-  };
-  const BasicRender = ({item}) => (
-    <SafeAreaView>
-      <View style={styles.basicitem}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.profileTitle}>{item.label}</Text>
-          <TouchableOpacity onPress={() => Detailref.current.open()}>
-            <PencilIcon height={15} width={15} color={'#2E86C1'} />
-          </TouchableOpacity>
-        </View>
-        <View style={{flexDirection: 'row', marginVertical: 4}}>
-          <SuiteCaseIcon height={20} width={20} color={'#ABB2B9'} />
-          <View>
-            {item.jobType ? (
-              <View>
-                <Text style={styles.ProfilItems}>{item.jobType}</Text>
-              </View>
-            ) : (
-              <View>
-                <Text style={styles.ProfilItems}>Work Status</Text>
-              </View>
-            )}
-          </View>
-        </View>
-        <View style={{flexDirection: 'row', marginVertical: 4}}>
-          <LocationIcon height={22} width={22} color={'#ABB2B9'} />
-          <Text style={styles.ProfilItems}>{item.location}</Text>
-        </View>
-        <View style={{flexDirection: 'row', marginVertical: 4}}>
-          <MailIcon height={20} width={20} color={'#ABB2B9'} />
-          <Text style={styles.ProfilItems}>{item.email}</Text>
-        </View>
-        <View style={{flexDirection: 'row', marginVertical: 4}}>
-          <TelephoneIcon height={15} width={15} color={'#ABB2B9'} />
-          <Text style={styles.ProfilItems}>{item.mobilenumber}</Text>
-        </View>
-        <View style={{flexDirection: 'row', marginVertical: 4}}>
-          <Doc height={20} width={20} color={'#ABB2B9'} />
-          <Text style={styles.ProfilItems}>{item.resume}</Text>
-        </View>
-      </View>
-      {/* ----------------------------------rb sheet of details--------------------------------------------- */}
-      <RBSheet
-        ref={Detailref}
-        height={windowHeight}
-        openDuration={250}
-        customStyles={{
-          container: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-          },
-        }}>
-        <ScrollView style={styles.Rbcontainer}>
-          <Formik
-            initialValues={{
-              workStatus: '',
-              currentCity: '',
-              mobileNumber: '',
-              email: '',
-              // availability: ''
-              //resume: null,
-            }}
-            validationSchema={yup.object().shape({
-              workStatus: yup.string(),
-              currentCity: yup.string().required('Current city is required'),
-              mobileNumber: yup
-                .string()
-                .required('Mobile number is required')
-                .matches(/^\d+$/, 'Mobile number must contain only numbers')
-                .max(10, 'Mobile number must be 10 digits'),
-              email: yup
-                .string()
-                .email('Invalid email')
-                .required('Email is required'),
-              // availability: yup.string().required('Availability is required')
-              //esume: yup.mixed().required('A resume is required'), // Validate resume field
-            })}
-            onSubmit={(values, actions) => {
-              handleDetailSubmit(values);
-              updateDetails(
-                item.id,
-                values.currentCity,
-                values.email,
-                values.mobileNumber,
-                values.workStatus,
-                //values.resume
-              );
-              // Update user data
-              actions.setSubmitting(false);
-            }}>
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              setFieldValue,
-              values,
-              errors,
-              touched,
-            }) => (
-              <View>
-                <View>
-                  <Text style={styles.rbSheetheading}>Basic Details</Text>
-                  <Text style={styles.rbsheetcontent}>
-                    About to yourself to help recruiters know you
-                  </Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontFamily: fonts.CircularStdBlack,
-                      fontSize: SIZES.h3,
-                      color: '#17202A',
-                      marginTop: '5%',
-                    }}>
-                    Work status
-                  </Text>
-                  <Field name="workStatus">
-                    {({field, form}) => (
-                      <RadioButton.Group
-                        onValueChange={form.handleChange('workStatus')}
-                        value={field.value}>
-                        <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
-                          <RadioButton value="fresher" color="#2E86C1" />
-                          <Text style={styles.rbsheetcontent}>Fresher</Text>
-                        </View>
-                        <View
-                          style={{flexDirection: 'row', alignItems: 'center'}}>
-                          <RadioButton value="experience" color="#2E86C1" />
-                          <Text style={styles.rbsheetcontent}>Experience</Text>
-                        </View>
-                      </RadioButton.Group>
+                    style={styles.radioButton}
+                    onPress={() => setSelectedOption('fresher')}>
+                    {selectedOption === 'fresher' ? (
+                      <Text style={styles.radioTextFocus}>Fresher</Text>
+                    ) : (
+                      <Text style={styles.radioText}>Fresher</Text>
                     )}
-                  </Field>
-                </View>
-                <View style={{marginVertical: 20}}>
-                  <CustomTextInput
-                    onChangeText={handleChange('currentCity')}
-                    onBlur={handleBlur('currentCity')}
-                    label={'Current city'}
-                    value={values.currentCity}
-                    error={touched.currentCity && errors.currentCity}
-                    maxLength={50}
-                    labelStyle={{fontFamily: fonts.CircularStdLight}}
-                    inputStyle={{fontFamily: fonts.CircularStdBook}}
-                  />
-                  <CustomTextInput
-                    label={'Mobile number'}
-                    onChangeText={handleChange('mobileNumber')}
-                    onBlur={handleBlur('mobileNumber')}
-                    value={values.mobileNumber}
-                    keyboardType="numeric"
-                    error={touched.mobileNumber && errors.mobileNumber}
-                    errorStyle={{fontFamily: fonts.CircularStdBook}}
-                    maxLength={10}
-                    labelStyle={{fontFamily: fonts.CircularStdLight}}
-                    inputStyle={{fontFamily: fonts.CircularStdBook}}
-                  />
-                  <CustomTextInput
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    label={'Email'}
-                    value={values.email}
-                    keyboardType="email-address"
-                    error={touched.email && errors.email}
-                    errorStyle={{fontFamily: fonts.CircularStdBook}}
-                    maxLength={50}
-                    labelStyle={{fontFamily: fonts.CircularStdLight}}
-                    inputStyle={{fontFamily: fonts.CircularStdBook}}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: fonts.CircularStdBlack,
-                      fontSize: SIZES.h3,
-                      color: '#17202A',
-                      marginTop: '5%',
-                    }}>
-                    Avalibility
-                  </Text>
-                  <View
-                    style={{
-                      borderColor: '#B4B4B4',
-                      borderWidth: 2,
-                      borderRadius: 10,
-                      marginVertical: 10,
-                    }}>
-                    {/* -------------------------dropdown-------------------------------------------------- */}
-                    <CustomDropDown
-                      label="Availability"
-                      labelStyle={{fontFamily: fonts.CircularStdBook}}
-                      inputStyle={{fontFamily: fonts.CircularStdBook}}
-                      value={values.availability}
-                      onChangeText={text => {
-                        setFieldValue('availability', text);
-                      }}
-                      dropDownlabel={'label'}
-                      errorText={errors.availability}
-                      dropDownData={availabilityOptions}
-                      errorTextStyle={{color: 'red'}}
-                      headerStyle={{
-                        fontFamily: fonts.CircularStdBlack,
-                        fontSize: SIZES.h3,
-                        color: '#17202A',
-                      }}
-                      itemTextStyle={{fontFamily: fonts.CircularStdBook}}
-                    />
+                  </TouchableOpacity>
                   </View>
-
                   <View>
-              <Text style={styles.headerText}>Resume</Text>
-              <TouchableOpacity
-                style={styles.uploadContainer}
-                onPress={() => handleDocumentSelection(setFieldValue)}
-              >
-                <Text>Upload Here</Text>
-              </TouchableOpacity>
-              {touched.resume && errors.resume && (
-                <Text style={{fontFamily: fonts.CircularStdBook,color:'red'}}>{errors.resume}</Text>
-              )}
-              {fileResponse && (
-                <Text style={styles.fileName}>
-                  {fileResponse[0].name}
-                </Text>
-              )}
-            </View>
+                  {selectedOption === 'experience' && (
+                    <>
+                      <CustomTextInput
+                        label={'Job Title'}
+                        labelStyle={{fontFamily: fonts.CircularStdLight}}
+                        maxLength={30}
+                        onChangeText={handleChange('jobTitle')}
+                        onBlur={handleBlur('jobTitle')}
+                        value={values.jobTitle}
+                        error={touched.jobTitle && errors.jobTitle}
+                        inputStyle={{fontFamily: fonts.CircularStdBook}}
+                        errorStyle={{fontFamily: fonts.CircularStdBook}}
+                      />
+                      <CustomTextInput
+                        label={'Experience Years'}
+                        labelStyle={{fontFamily: fonts.CircularStdLight}}
+                        maxLength={10}
+                        keyboardType="numeric"
+                        onChangeText={handleChange('experience')}
+                        onBlur={handleBlur('experience')}
+                        value={values.experience}
+                        error={touched.experience && errors.experience}
+                        inputStyle={{fontFamily: fonts.CircularStdBook}}
+                        errorStyle={{fontFamily: fonts.CircularStdBook}}
+                      />
+                      <CustomTextInput
+                        label={'Company Name'}
+                        labelStyle={{fontFamily: fonts.CircularStdLight}}
+                        maxLength={30}
+                        onChangeText={handleChange('companyName')}
+                        onBlur={handleBlur('companyName')}
+                        value={values.companyName}
+                        error={touched.companyName && errors.companyName}
+                        inputStyle={{fontFamily: fonts.CircularStdBook}}
+                        errorStyle={{fontFamily: fonts.CircularStdBook}}
+                      />
+                      <CustomTextInput
+                        label={'TotalSalary'}
+                        labelStyle={{fontFamily: fonts.CircularStdLight}}
+                        maxLength={30}
+                        onChangeText={handleChange('totalSalary')}
+                        onBlur={handleBlur('totalSalary')}
+                        value={values.totalSalary}
+                        error={touched.totalSalary && errors.totalSalary}
+                        inputStyle={{fontFamily: fonts.CircularStdBook}}
+                        errorStyle={{fontFamily: fonts.CircularStdBook}}
+                      />
+                    </>
+                  )}
                 </View>
                 <View
                   style={{
@@ -676,9 +477,10 @@ const Profile = ({navigation}) => {
                     justifyContent: 'space-between',
                     paddingHorizontal: 30,
                     marginVertical: 40,
-                    marginTop: '10%',
+                    marginTop: 'auto',
                   }}>
-                  <TouchableOpacity onPress={() => Detailref.current.close()}>
+                  <TouchableOpacity
+                    onPress={() => bottomSheetRef.current.close()}>
                     <Text
                       style={{
                         fontFamily: fonts.CircularStdMedium,
@@ -690,7 +492,7 @@ const Profile = ({navigation}) => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={handleSubmit}>
+                    onPress={handleProfileSubmit}>
                     <Text
                       style={{
                         fontFamily: fonts.CircularStdMedium,
@@ -700,11 +502,135 @@ const Profile = ({navigation}) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
+              </SafeAreaView>
+                <RBSheet
+                  ref={Pictureref}
+                  height={200}
+                  openDuration={250}
+                  customStyles={{
+                    container: {
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                    },
+                  }}>
+                  <View
+                    style={[
+                      styles.Rbcontainer,
+                      {justifyContent: 'space-between'},
+                    ]}>
+                    <TouchableOpacity onPress={handleImagePicker}>
+                      <View style={{flexDirection: 'row'}}>
+                        <GalleryIcon height={28} width={28} />
+                        <Text style={styles.imagepicker}>
+                          Choose from Library
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleCameraPicker}>
+                      <View style={{flexDirection: 'row'}}>
+                        <CameraIcon height={25} width={25} />
+                        <Text style={styles.imagepicker}>Take a Photo</Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleCropImage}>
+                      <View style={{flexDirection: 'row'}}>
+                        <CropIcon height={25} width={25} />
+                        <Text style={styles.imagepicker}>Crop Image</Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedImage(null);
+                        Pictureref.current.close();
+                      }}>
+                      <View style={{flexDirection: 'row'}}>
+                        <RemoveIcon height={25} width={25} color={'red'} />
+                        <Text style={[styles.imagepicker, {color: 'red'}]}>
+                          Remove
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </RBSheet>
+              </View>
+            </ScrollView>
+          )}
+        </Formik>
+      </RBSheet>
+    </ImageBackground>
+  );
+
+  //basic details :
+  const [basicDetails, setBasicDetails] = useState([
+    {
+      id: 2,
+      label: 'Basic details',
+      firstname: 'Work Status',
+      lastname: 'chennai',
+      email: 'dummy@gmail.com',
+      // mobilenumber: 1234567890,
+      // resume: 'dummy.pdf',
+    },
+  ]);
+  //-------------------update detail--------------------------
+  const updateDetails = (
+    id,
+    Firstname,
+    Lastname,
+    email
+    
+  ) => {
+    const updatedDetailsData = basicDetails.map(item => {
+      if (item.id === id) {
+        return {
+          ...item,
+          label: 'Basic details',
+          firstname:Firstname,
+          lastname:Lastname,
+          email: email,
+          //mobilenumber: mobilenumber,
+        };
+      }
+      return item;
+    });
+
+    setBasicDetails(updatedDetailsData);
+  };
+  const BasicRender = ({item}) => (
+    <SafeAreaView>
+      <View style={styles.basicitem}>
+        <Text style={styles.profileTitle}>{item.label}</Text>
+        <View style={{flexDirection: 'row', marginVertical: 4}}>
+          <SuiteCaseIcon height={20} width={20} color={'#ABB2B9'} />
+          <View>
+            {item.firstname ? (
+              <View>
+                <Text style={styles.ProfilItems}>{item.firstname}</Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.ProfilItems}>first name</Text>
               </View>
             )}
-          </Formik>
-        </ScrollView>
-      </RBSheet>
+          </View>
+        </View>
+        <View style={{flexDirection: 'row', marginVertical: 4}}>
+          {/* <LocationIcon height={22} width={22} color={'#ABB2B9'} /> */}
+          <Text style={styles.ProfilItems}>{item.lastname}</Text>
+        </View>
+        <View style={{flexDirection: 'row', marginVertical: 4}}>
+          {/* <MailIcon height={20} width={20} color={'#ABB2B9'} /> */}
+          <Text style={styles.ProfilItems}>{item.email}</Text>
+        </View>
+        <View style={{flexDirection: 'row', marginVertical: 4}}>
+          <TelephoneIcon height={15} width={15} color={'#ABB2B9'} />
+          <Text style={styles.ProfilItems}>{item.mobilenumber}</Text>
+        </View>
+        <View style={{flexDirection: 'row', marginVertical: 4}}>
+          <Doc height={20} width={20} color={'#ABB2B9'} />
+          <Text style={styles.ProfilItems}>{item.resume}</Text>
+        </View>
+      </View>
     </SafeAreaView>
   );
   const [experiencedata, setExperiencedata] = useState([
@@ -748,12 +674,7 @@ const Profile = ({navigation}) => {
   const renderexperience = ({item}) => (
     <SafeAreaView>
       <View style={styles.basicitem}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.profileTitle}>{item.label}</Text>
-          <TouchableOpacity onPress={() => Experienceref.current.open()}>
-            <PencilIcon height={15} width={15} color={'#2E86C1'} />
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.profileTitle}>{item.label}</Text>
         <Text
           style={{
             marginVertical: 4,
@@ -782,178 +703,6 @@ const Profile = ({navigation}) => {
         </Text>
         <Text style={styles.ProfilItems}>{item.NoticePeried}</Text>
       </View>
-      <RBSheet
-        ref={Experienceref}
-        height={windowHeight}
-        openDuration={250}
-        customStyles={{
-          container: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-          },
-        }}>
-        <SafeAreaView style={styles.Rbcontainer}>
-          <Formik
-            initialValues={{
-              experience: '',
-              company: '',
-              totalSalary: '',
-              noticePeriod: '',
-            }}
-            validationSchema={yup.object().shape({
-              experience: yup.string().required('Experience is required'),
-              company: yup.string().required('Company name is required'),
-              totalSalary: yup
-                .string()
-                .required('Total annual salary is required'),
-              noticePeriod: yup.string().required('Notice period is required'),
-            })}
-            onSubmit={(values, actions) => {
-              handleExperienceSubmit(values);
-              updateExperience(
-                item.id,
-                values.experience,
-                values.company,
-                values.noticePeriod,
-              );
-              // Update user data
-              actions.setSubmitting(false);
-            }}>
-            {({values, handleChange, handleSubmit, errors, touched}) => (
-              <>
-                <View>
-                  <Text style={styles.rbSheetheading}>Experience Details</Text>
-                  <Text style={styles.rbsheetcontent}>
-                    About your experience details to help recruiters know you
-                  </Text>
-                </View>
-                <Text
-                  style={{
-                    marginBottom: -10,
-                    marginTop: 10,
-                    fontFamily: fonts.CircularStdBook,
-                    color: '#3498DB',
-                  }}>
-                  Experience
-                </Text>
-                <CustomTextInput
-                  placeholder={'Eg 2.6 years'}
-                  value={values.experience}
-                  onChangeText={handleChange('experience')}
-                  error={touched.experience && errors.experience}
-                  maxLength={10}
-                  inputStyle={{fontFamily: fonts.CircularStdBook}}
-                  errorStyle={{fontFamily: fonts.CircularStdBook}}
-                />
-                <Text
-                  style={{
-                    marginBottom: -10,
-                    marginTop: 10,
-                    fontFamily: fonts.CircularStdBook,
-                    color: '#3498DB',
-                  }}>
-                  Company
-                </Text>
-                <CustomTextInput
-                  placeholder={'Company name'}
-                  value={values.company}
-                  onChangeText={handleChange('company')}
-                  error={touched.company && errors.company}
-                  maxLength={50}
-                  inputStyle={{fontFamily: fonts.CircularStdBook}}
-                  errorStyle={{fontFamily: fonts.CircularStdBook}}
-                />
-                <Text
-                  style={{
-                    marginBottom: -10,
-                    marginTop: 10,
-                    fontFamily: fonts.CircularStdBook,
-                    color: '#3498DB',
-                  }}>
-                  Total annual salary
-                </Text>
-                <CustomTextInput
-                  placeholder={'Eg 4,00,000'}
-                  value={values.totalSalary}
-                  onChangeText={handleChange('totalSalary')}
-                  error={touched.totalSalary && errors.totalSalary}
-                  maxLength={20}
-                  inputStyle={{fontFamily: fonts.CircularStdBook}}
-                  errorStyle={{fontFamily: fonts.CircularStdBook}}
-                />
-                <Text
-                  style={{
-                    fontFamily: fonts.CircularStdBlack,
-                    fontSize: SIZES.h3,
-                    color: '#17202A',
-                    marginTop: '5%',
-                  }}>
-                  Notice period
-                </Text>
-                <RadioButton.Group
-                  value={values.noticePeriod}
-                  onValueChange={newValue =>
-                    handleChange('noticePeriod')(newValue)
-                  }>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <RadioButton value="15 Days or less" color="#2E86C1" />
-                    <Text style={styles.rbsheetcontent}>15 Days or less</Text>
-                  </View>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <RadioButton value="1 month" color="#2E86C1" />
-                    <Text style={styles.rbsheetcontent}>1 month</Text>
-                  </View>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <RadioButton value="2 month" color="#2E86C1" />
-                    <Text style={styles.rbsheetcontent}>2 month</Text>
-                  </View>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <RadioButton value="3 month" color="#2E86C1" />
-                    <Text style={styles.rbsheetcontent}>3 month</Text>
-                  </View>
-                </RadioButton.Group>
-                {errors.noticePeriod && touched.noticePeriod && (
-                  <Text
-                    style={{color: 'red', fontFamily: fonts.CircularStdBook}}>
-                    {errors.noticePeriod}
-                  </Text>
-                )}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    paddingHorizontal: 30,
-                    marginVertical: 40,
-                    marginTop: '35%',
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => Experienceref.current.close()}>
-                    <Text
-                      style={{
-                        fontFamily: fonts.CircularStdMedium,
-                        color: '#0277BD',
-                        marginTop: 13,
-                      }}>
-                      Cancel
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleSubmit}>
-                    <Text
-                      style={{
-                        fontFamily: fonts.CircularStdMedium,
-                        color: '#fff',
-                      }}>
-                      Save
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </Formik>
-        </SafeAreaView>
-      </RBSheet>
     </SafeAreaView>
   );
   const [index, setIndex] = useState(0);
@@ -963,7 +712,7 @@ const Profile = ({navigation}) => {
     {key: 'EducationDetails', title: 'Education Details'},
   ]);
   const BasicdetailRoute = () => (
-    <ScrollView style={{flex:1,marginBottom:50}}>
+    <ScrollView style={{flex: 1, marginBottom: 50}}>
       <FlatList
         data={basicDetails}
         renderItem={({item}) => BasicRender({item, updateDetails})}
@@ -981,7 +730,11 @@ const Profile = ({navigation}) => {
       <Text>helo</Text>
     </View>
   );
-  const EducationalDetailsRoute = () => <View></View>;
+  const EducationalDetailsRoute = () => (
+    <View>
+      <Text></Text>
+    </View>
+  );
   const renderScene = SceneMap({
     BasicDetails: BasicdetailRoute,
     ProfessionalDetails: professiondetailRoute,
@@ -1067,7 +820,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   TextinputContainer: {
-    marginVertical: 20,
+    marginVertical: 5,
   },
   profilename: {
     fontFamily: fonts.CircularStdBlack,
@@ -1101,6 +854,34 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 6,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    borderColor: '#ccc',
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    width: '100%',
+    marginVertical: 10,
+  },
+  shadowProp: {
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  uploadButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#ddd',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginBottom:20
+  },
+  uploadButtonText: {
+    fontFamily: fonts.CircularStdBook,
+    color:'#000'
   },
   toggleText: {
     //fontSize: 16,
@@ -1150,12 +931,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   fileName: {
-    fontFamily:fonts.CircularStdBook,
+    fontFamily: fonts.CircularStdBook,
     marginTop: 10,
     color: '#17202A',
   },
   flatList: {
-    flex: 1., // Take up available space
+    flex: 1, // Take up available space
     padding: 0, // No padding
     margin: 0, // No margin
   },
@@ -1163,6 +944,24 @@ const styles = StyleSheet.create({
     flex: 2.1, // Take up available space
     padding: 0, // No padding
     margin: 0, // No margin
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    //justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  radioButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  radioTextFocus: {
+    fontFamily: fonts.CircularStdBook,
+    marginRight: 10,
+    color: '#3498DB',
+  },
+  radioText: {
+    fontFamily: fonts.CircularStdBook,
+    marginRight: 10,
   },
 });
 

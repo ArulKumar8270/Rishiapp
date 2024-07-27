@@ -172,7 +172,7 @@ const Post = ({ navigation }) => {
               inputStyle={{ fontFamily: fonts.CircularStdBook }}
               errorStyle={{ fontFamily: fonts.CircularStdBook }}
             />
-            <View style={styles.logoContainer}>
+            {/* <View style={styles.logoContainer}>
               <Text style={styles.logoLabel}>Select Company Logo</Text>
               <TouchableOpacity style={{alignItems:'center',marginHorizontal:10,marginVertical:-10}} onPress={handleImagePicker}>
                 <View style={styles.logoPicker}>
@@ -183,7 +183,7 @@ const Post = ({ navigation }) => {
                   )}
                 </View>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <View style={styles.buttonContainer}>
               <LinearGradient
                 colors={['#440217', '#CF577D', '#440217']}

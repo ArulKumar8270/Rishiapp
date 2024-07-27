@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { Overlay } from 'react-native-elements';
 import { fonts } from "../../../config";
-import { SideMenuIcon, ThumbsDown, Thumbsup } from "../../assets/svg";
+import { PencilIcon, SideMenuIcon, SuiteCaseIcon, ThumbsDown, Thumbsup } from "../../assets/svg";
 
 export default function Header({ title, navigation, isMainPage }) {
   const [navDraw, setNavDraw] = useState(false);
@@ -36,7 +36,7 @@ export default function Header({ title, navigation, isMainPage }) {
         {
           text: 'Yes',
           onPress: () => {
-            navigation.navigate('Login'); // Replace 'Login' with your actual login screen route
+            navigation.navigate('Home'); // Replace 'Login' with your actual login screen route
           },
           style: 'destructive',
         },
@@ -111,12 +111,12 @@ export default function Header({ title, navigation, isMainPage }) {
             </View>
           </TouchableOpacity>
           <View style={{ marginTop: '6%', marginLeft: '3%' }}>
-            {renderDetails("Company Profile", "Post", false, <FontAwesomeIcon icon={faMagnifyingGlass} />)}
-            {renderDetails("Create Jobs", "CreateJob", false, <FontAwesomeIcon icon={faHouse} />)}
-            {renderDetails("Candidates", "Candidates", false, <FontAwesomeIcon icon={faClipboard} />)}
-            {renderDetails("Settings", "Settings", false, <FontAwesomeIcon icon={faGear} />)}
-            {renderDetails("Jobs", "Jobs", false, <FontAwesomeIcon icon={faBookmark} />)}
-            {renderDetails("Log out", null, true, <FontAwesomeIcon icon={faArrowRightFromBracket} />)}
+            {renderDetails("Company Profile", "Post", false, <SuiteCaseIcon color={'#000'} height={20} width={20}/>)}
+            {renderDetails("Create Jobs", "CreateJob", false, )}
+            {renderDetails("Candidates", "Candidates", false, )}
+            {renderDetails("Settings", "Settings", false, )}
+            {renderDetails("Jobs", "Jobs", false, )}
+            {renderDetails("Log out", null, true, )}
           </View>
           <View style={styles.bottomContent}>
             <Text style={{ fontFamily: fonts.CircularStdBook, color: '#000066' }}>Finding this app useful?</Text>
