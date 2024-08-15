@@ -20,10 +20,13 @@ import { CustomTextInput } from '../assets/textinput';
 import Geolocation from '@react-native-community/geolocation';
 import { err } from 'react-native-svg';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { loginResponseSelector } from '../redux/selectors/app.selector';
 
 const Dashboard = ( {navigation,route }) => {
   const { params } = route;
-  console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&',route);
+  const loginResponse = useSelector(loginResponseSelector);
+  console.log('--------------------------------',loginResponse)
   
   const searchsheet=useRef();
   const windowHeight = Dimensions.get('window').height;

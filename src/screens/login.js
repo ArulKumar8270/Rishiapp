@@ -7,6 +7,9 @@ import { SIZES, fontSize } from '../styles/config';
 import { fonts } from '../../config';
 import { useDispatch, useSelector } from 'react-redux';
 import { LOGIN } from '../../actions/userAction';
+import axios from 'axios';
+import { store } from '../redux';
+import { SET_LOGIN_RESPONSE } from '../redux/constants';
 
 const validationSchema = Yup.object().shape({
   MobileNumber: Yup.string()
@@ -18,22 +21,51 @@ const validationSchema = Yup.object().shape({
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { loading, error, user } = useSelector((state) => state.auth);
+  const [loading,setLoading]=useState(false)
+  const handleLogin = useCallback(async (values) => {
+      setLoading(true);
+      try {
+        const request = {
+          userName: values.MobileNumber,
+          password: values.Password,
+        };
+        console.log('Sending request to the server:',await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request));
+  
+        const response = await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request);
 
-  useEffect(() => {
-    if (user) {
-      navigation.navigate('Dashbord', { data: user });
-    } else if (error) {
-      Alert.alert('Login Failed', error);
-    }
-  }, [user, error, navigation]);
-
-  const handleLogin = useCallback(
-    (values) => {
-      dispatch(LOGIN(values));
-    },
-    [dispatch]
-  );
+        console.log("=================================ss",response.data);
+        setLoading(false);
+        if (response.data.success) {
+          navigation.navigate('Dashbord',{request,data : response.data});
+          store.dispatch({
+            type: SET_LOGIN_RESPONSE,
+            payload:  response.data,
+          });
+        }
+        else{
+          Alert.alert('Error', response.data.error);
+          //navigation.navigate('Dashbord',{request});
+        }
+      } catch (error) {
+        setLoading(false);
+        console.error('error----------------------', error);
+  
+        if (error.response) {
+          // Server responded with a status other than 200 range
+          console.error('Server error:', error.response.data);
+          Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
+        } else if (error.request) {
+          // Request was made but no response received
+          console.error('Network error:', error.request);
+          Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
+        } else {
+          // Something else happened in setting up the request
+          console.error('Error:', error.message);
+          Alert.alert('Login Failed', 'An error occurred. Please try again.');
+        }
+      }
+    }, [navigation]);
+        
 
   return (
     <Formik

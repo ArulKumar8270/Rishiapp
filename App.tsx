@@ -42,6 +42,9 @@ import Blogs from './src/Slidemenu/jobBlogs';
 import Testimonials from './src/Slidemenu/testimonials';
 import Disclaimer from './src/Slidemenu/disclimer';
 import ProfileUpdate from './src/bottomscreen/profileitems.js/Profileupdate';
+import { Provider } from 'react-redux';
+import { store } from './src/redux';
+
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
 // in App.js
@@ -50,6 +53,8 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const App = () => {
   return (
+    <Provider
+    store={store}> 
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false, presentation: 'modal' }}>
         <Stack.Screen name="Home" component={Home} />
@@ -84,6 +89,7 @@ const App = () => {
         <Stack.Screen name='ProfileUpdate' component={ProfileUpdate}/>
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
     
   );
 };
