@@ -34,6 +34,14 @@ import CreateJob from './src/screens/createJob';
 import Jobs from './src/screens/jobs';
 import JobAppliedScreen from './src/screens/appliedJob';
 import AppliedTo from './src/screens/ApplyedTo';
+import Terms from './src/Slidemenu/terms';
+import Contactus from './src/Slidemenu/contactus';
+import AboutUs from './src/Slidemenu/aboutUs';
+import Privacy from './src/Slidemenu/privacy';
+import Blogs from './src/Slidemenu/jobBlogs';
+import Testimonials from './src/Slidemenu/testimonials';
+import Disclaimer from './src/Slidemenu/disclimer';
+import ProfileUpdate from './src/bottomscreen/profileitems.js/Profileupdate';
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
 // in App.js
@@ -66,6 +74,14 @@ const App = () => {
         <Stack.Screen name="Jobs" component={Jobs} />
         <Stack.Screen name='JobAppliedScreen' component={JobAppliedScreen}/>
         <Stack.Screen name='AppliedTo' component={AppliedTo}/>
+        <Stack.Screen name='Terms' component={Terms}/>
+        <Stack.Screen name='Contactus' component={Contactus}/>
+        <Stack.Screen name='Aboutus' component={AboutUs}/>
+        <Stack.Screen name='Privacy' component={Privacy}/>
+        <Stack.Screen name='Blogs' component={Blogs}/>
+        <Stack.Screen name='Testimonials' component={Testimonials}/>
+        <Stack.Screen name='Disclaimer' component={Disclaimer}/>
+        <Stack.Screen name='ProfileUpdate' component={ProfileUpdate}/>
       </Stack.Navigator>
     </NavigationContainer>
     

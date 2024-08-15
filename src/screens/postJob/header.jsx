@@ -33,7 +33,8 @@ export default function Header({ title, navigation, isMainPage }) {
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {
+        { 
+          
           text: 'Yes',
           onPress: () => {
             navigation.navigate('Home'); // Replace 'Login' with your actual login screen route

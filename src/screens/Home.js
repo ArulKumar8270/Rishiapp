@@ -33,7 +33,7 @@ const Home = ({ navigation }) => {
           style={styles.buttonPostJOB}
         >
           <TouchableOpacity onPress={() => navigation.navigate('Postlogin')}>
-            <Text style={{ color: 'white', fontSize: 10, fontFamily: fonts.CircularStdBlack }}>Post Job</Text>
+            <Text style={{ color: 'white', fontSize: 10, fontFamily: fonts.CircularStdBlack }}>Employer Login</Text>
            </TouchableOpacity></LinearGradient>
            {/* <View style={[{flexDirection:'row',justifyContent:'space-between'}]}>
             <TouchableOpacity><Text style={styles.loginside}>Employee Login</Text></TouchableOpacity>

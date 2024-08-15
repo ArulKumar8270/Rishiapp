@@ -23,6 +23,8 @@ import axios from 'axios';
 
 const Dashboard = ( {navigation,route }) => {
   const { params } = route;
+  console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&',route);
+  
   const searchsheet=useRef();
   const windowHeight = Dimensions.get('window').height;
   const [dataValue, setDataValue] = useState(null)

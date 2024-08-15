@@ -2,7 +2,7 @@ import { ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View
 import React, { useCallback, useEffect, useState } from 'react'
 import { assets } from '../../react-native.config'
 import { SIZES } from '../styles/config'
-import { BackIcon, BookmarkIcon, LocationIcon, MyIcon, PagesIcon, PinIcon, SharIcon, SuiteCaseIcon, WalletIcon } from '../assets/svg'
+import { BackIcon, BookmarkIcon, ChatIcon, LocationIcon, MyIcon, PagesIcon, PinIcon, SharIcon, SuiteCaseIcon, WalletIcon } from '../assets/svg'
 import { fonts } from '../../config'
 import { ScrollView } from 'react-native-gesture-handler'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -248,11 +248,19 @@ const [index, setIndex] = useState(0);
           onIndexChange={setIndex}
           renderTabBar={renderTabBar}
            />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10}}>
-        <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop:20}}>
-           <PagesIcon height={20} width={20} color={'#411004'}/>
-          <Text style={{ color: '#411004', fontFamily: fonts.CircularStdBlack, fontSize: SIZES.body3 }}>Send me job like this</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
+      <LinearGradient
+          colors={['#440217', '#CF577D', '#440217']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1.5 }}
+          locations={[0, 0.5, 1]}
+          style={styles.button}
+        >
+        <TouchableOpacity style={{ flexDirection: 'row'}}>
+           <ChatIcon height={20} width={20} color={'#fff'} style={{marginHorizontal:10}}/>
+          <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.body3 }}>Send message</Text>
         </TouchableOpacity>
+        </LinearGradient>
         <LinearGradient
           colors={['#440217', '#CF577D', '#440217']}
           start={{ x: 0, y: 0 }}
@@ -332,7 +340,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  basicitem: {
+  basicitem: {    
     backgroundColor: '#fff',
     justifyContent: 'space-between',
     padding: 20,
@@ -349,7 +357,9 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   button: {
+    justifyContent:'center',
     width: '50%',
+    height:50,
     borderWidth: 1,
     borderColor: '#ccc',
     padding: SIZES.radius,
