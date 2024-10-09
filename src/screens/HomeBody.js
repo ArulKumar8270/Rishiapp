@@ -7,6 +7,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
+    StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,8 +18,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import Bottomtab from "./bottomtab";
 import BottomTab from "./bottomtab";
 import { loader } from "../assets";
-import { Overlay } from "react-native-elements";
+import { colors, Overlay } from "react-native-elements";
 import Header from "./postJob/header";
+import { COLORS } from "../styles/config";
 
 export default function HomeBody({
     children,
@@ -36,9 +38,6 @@ export default function HomeBody({
     const { height } = Dimensions.get('window');
     const UNFOCUSED_HEIGHT = (height * 57) / 100;
     const FOCUSED_HEIGHT = (height * 87) / 100;
-
-
-
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
@@ -65,8 +64,8 @@ export default function HomeBody({
             style={{
                 flex: 1,
                 height: isKeyboardVisible ? FOCUSED_HEIGHT : UNFOCUSED_HEIGHT,
-                backgroundColor:'#fff'
             }}>
+                <StatusBar backgroundColor={colors.grey1}/>
             <LinearGradient
                 // style={{
                 //     flex: 1,

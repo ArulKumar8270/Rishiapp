@@ -1,16 +1,24 @@
 import { ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import { assets } from '../../react-native.config'
-import { SIZES } from '../styles/config'
+import { COLORS, SIZES } from '../styles/config'
 import { BackIcon, BookmarkIcon, ChatIcon, LocationIcon, MyIcon, PagesIcon, PinIcon, SharIcon, SuiteCaseIcon, WalletIcon } from '../assets/svg'
 import { fonts } from '../../config'
 import { ScrollView } from 'react-native-gesture-handler'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import LinearGradient from 'react-native-linear-gradient'
+import Icons3 from 'react-native-vector-icons/FontAwesome'
+
 import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { loginResponseSelector } from '../redux/selectors/app.selector'
+import { combineReducers } from 'redux'
 
 const CompanyDetails = ({ navigation,route }) => {
 const {params} = route;
+console.log('parmas----------------------------->' ,params);
+const loginResponse = useSelector(loginResponseSelector);
+
 const [loading, setLoading] = useState(false);
 // const handleApplyjob = useCallback(async () => {
 //   setLoading(true);
@@ -74,7 +82,7 @@ const [loading, setLoading] = useState(false);
           flexDirection: 'row',
           justifyContent: 'space-between',
           width: '100%',
-        }}>
+        }}>     
           <TouchableOpacity onPress={() => navigation.navigate('Dashbord')} style={{ marginTop: 5 }}>
             <BackIcon height={22} width={22} color={'#fff'} />
           </TouchableOpacity>
@@ -96,7 +104,7 @@ const [loading, setLoading] = useState(false);
           </View>
         </View>
         <View>
-          <Image source={require('../assets/zoho.png')} style={styles.logoImage} />
+         { params.item.companyLogo==null?<Icons3 name='building-o' size={40} color={COLORS.primaryOrangeHex} style={[styles.logoImage,{paddingLeft:10, paddingTop:5}]}/>:<Image source={params.item.companyLogo} style={styles.logoImage} />}
           <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBlack, fontSize: SIZES.h2, marginBottom: 5 }}>{params.item.jobTitle}</Text>
           <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>{params.item.company}</Text>
           <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.h3, marginBottom: 5 }}>{params.item.jobCategory}</Text>
@@ -254,9 +262,22 @@ const [index, setIndex] = useState(0);
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1.5 }}
           locations={[0, 0.5, 1]}
-          style={styles.button}
+          style={styles.button}                         
         >
-        <TouchableOpacity style={{ flexDirection: 'row'}}>
+       <TouchableOpacity
+  style={{ flexDirection: 'row' }}
+  onPress={() => {
+    const userId = loginResponse?.data?.id; // Get the current user ID
+    const companyId = params.item.companyId; // Get the company ID from params
+    const conversationId = `${userId}_${companyId}`; // Create a unique conversation ID
+    const companyName = params.item.companyName
+    navigation.navigate('ConversationScreen', {
+      companyId: companyId,
+      conversationId: conversationId,
+      companyName : companyName // Pass the conversation ID
+    });
+  }}
+>
            <ChatIcon height={20} width={20} color={'#fff'} style={{marginHorizontal:10}}/>
           <Text style={{ color: '#fff', fontFamily: fonts.CircularStdBook, fontSize: SIZES.body3 }}>Send message</Text>
         </TouchableOpacity>
@@ -268,7 +289,7 @@ const [index, setIndex] = useState(0);
           locations={[0, 0.5, 1]}
           style={styles.button}
         >
-          <TouchableOpacity  onPress={()=>navigation.navigate('AppliedTo')}>
+          <TouchableOpacity onPress={()=>navigation.navigate('AppliedSucsuss')}>
             <Text style={{ textAlign: 'center', color: 'white', fontFamily: fonts.CircularStdMedium }}>Apply</Text>
           </TouchableOpacity>
         </LinearGradient>

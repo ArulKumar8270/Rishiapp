@@ -17,12 +17,16 @@ import {
 import { Overlay } from 'react-native-elements';
 import { fonts } from "../../../config";
 import { PencilIcon, SideMenuIcon, SuiteCaseIcon, ThumbsDown, Thumbsup } from "../../assets/svg";
+import { useSelector } from "react-redux";
+import { EmployerLoginResponse, employerLoginResponseSelector, EmployerLoginResponseSelector } from "../../redux/selectors/app.selector";
 
 export default function Header({ title, navigation, isMainPage }) {
   const [navDraw, setNavDraw] = useState(false);
   const [imageLiked, setImageLiked] = useState(false);
   const [imageDislike, setImageDislike] = useState(false);
-
+ const employerresponse=useSelector(employerLoginResponseSelector)
+ console.log('------------------------------------------------>>>>>>', employerresponse);
+ 
   const handleLogout = () => {
     Alert.alert(
       'Logout Confirmation',

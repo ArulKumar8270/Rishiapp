@@ -1,177 +1,230 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, TextInput, TouchableOpacity,Image,Dimensions,PermissionsAndroid, Alert,Linking} from 'react-native';
+import React, {useState, useEffect, useMemo, useRef, useCallback} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+  PermissionsAndroid,
+  Alert,
+  Linking,
+} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'; // Corrected icon import
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faSearch} from '@fortawesome/free-solid-svg-icons/faSearch'; // Corrected icon import
 import HomeBody from './HomeBody';
-import { fonts } from "../../config";
-import { faShareNodes } from '@fortawesome/free-solid-svg-icons/faShareNodes';
-import { faLocationDot } from '@fortawesome/free-solid-svg-icons/faLocationDot';
-import { faWallet } from '@fortawesome/free-solid-svg-icons/faWallet';
-import { faSuitcase } from '@fortawesome/free-solid-svg-icons/faSuitcase';
-import { SIZES, fontSize } from '../styles/config';
-import { MaterialIcons } from '@expo/vector-icons';
-import { RateingIcon,Rate, BookmarkIcon, BackIcon, CurrentLocation } from '../assets/svg';
-import { Drawer } from 'react-native-paper';
-import { NavigationContainer } from '@react-navigation/native';
+import {fonts} from '../../config';
+import {faShareNodes} from '@fortawesome/free-solid-svg-icons/faShareNodes';
+import {faLocationDot} from '@fortawesome/free-solid-svg-icons/faLocationDot';
+import {faWallet} from '@fortawesome/free-solid-svg-icons/faWallet';
+import {faSuitcase} from '@fortawesome/free-solid-svg-icons/faSuitcase';
+import {
+  BORDERRADIUS,
+  COLORS,
+  FONTSIZE,
+  SIZES,
+  SPACING,
+  colors,
+  fontSize,
+} from '../styles/config';
+import {MaterialIcons} from '@expo/vector-icons';
+import {
+  RateingIcon,
+  Rate,
+  BookmarkIcon,
+  BackIcon,
+  CurrentLocation,
+} from '../assets/svg';
+import {Drawer} from 'react-native-paper';
+import {NavigationContainer} from '@react-navigation/native';
 import RowBottomsheetContent from './rbsheet';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { CustomTextInput } from '../assets/textinput';
+import {CustomTextInput} from '../assets/textinput';
 import Geolocation from '@react-native-community/geolocation';
-import { err } from 'react-native-svg';
+import {err} from 'react-native-svg';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { loginResponseSelector } from '../redux/selectors/app.selector';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  loginResponseSelector,
+  UserDataSelector,
+} from '../redux/selectors/app.selector';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import Icons from 'react-native-vector-icons/Feather';
+import Icons2 from 'react-native-vector-icons/MaterialIcons';
+import {color} from 'react-native-elements/dist/helpers';
+import LinearGradient from 'react-native-linear-gradient';
+import Icons3 from 'react-native-vector-icons/FontAwesome'
+import { store } from '../redux';
+import { SET_COMPANY_DATA } from '../redux/constants';
 
-const Dashboard = ( {navigation,route }) => {
-  const { params } = route;
+const Dashboard = ({navigation, route}) => {
+  const {params} = route;
   const loginResponse = useSelector(loginResponseSelector);
-  console.log('--------------------------------',loginResponse)
-  
-  const searchsheet=useRef();
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>-', loginResponse);
+  const dispatch = useDispatch();
+  const searchsheet = useRef();
   const windowHeight = Dimensions.get('window').height;
-  const [dataValue, setDataValue] = useState(null)
-
-
+  const [dataValue, setDataValue] = useState(null);
+  const TabBarHight = useBottomTabBarHeight();
   const [data, setData] = useState(dataValue);
   const [searchLocation, setSearchLocation] = useState('');
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const [isLoading, setLoading] = useState(true);
-  const [filterData, setFilterData]=useState(dataValue)
+  const [filterData, setFilterData] = useState(dataValue);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   useEffect(() => {
-    jobDetailsApi()
-  },[])
-const jobDetailsApi = useCallback(async (values) => {
-    setLoading(true);
-    try {
-      const response = await axios.get('https://rishijob.com/backend/api/v1/courses');
-      console.log('=================',response.data.data)
-      setDataValue(response.data.data.data)
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-     
-  
-      if (error.response) {
-        // Server responded with a status other than 200 range
-        console.error('Server error:', error.response.data);
-        Alert.alert('Login Failed', error.response.data.message || 'An error occurred. Please try again.');
-      } else if (error.request) {
-        // Request was made but no response received
-        console.error('Network error:', error.request);
-        Alert.alert('Login Failed', 'No response from the server. Please check your internet connection and try again.');
-      } else {
-        // Something else happened in setting up the request
-        console.error('Error:', error.message);
-        Alert.alert('Login Failed', 'An error occurred. Please try again.');
+    jobDetailsApi();
+  }, []);
+  const jobDetailsApi = useCallback(
+    async values => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          'https://rishijob.com/backend/api/v1/courses',
+        );
+        console.log('=================', response.data.data);
+        setDataValue(response.data.data.data);
+        setLoading(false);
+        store.dispatch({
+          type:SET_COMPANY_DATA,
+          payload:response.data.data.data,
+        })
+      } catch (error) {
+        setLoading(false);
+
+        if (error.response) {
+          // Server responded with a status other than 200 range
+          console.error('Server error:', error.response.data);
+          Alert.alert(
+            'Login Failed',
+            error.response.data.message ||
+              'An error occurred. Please try again.',
+          );
+        } else if (error.request) {
+          // Request was made but no response received
+          console.error('Network error:', error.request);
+          Alert.alert(
+            'Login Failed',
+            'No response from the server. Please check your internet connection and try again.',
+          );
+        } else {
+          // Something else happened in setting up the request
+          console.error('Error:', error.message);
+          Alert.alert('Login Failed', 'An error occurred. Please try again.');
+        }
       }
-    }
-  }, [navigation]);
+    },
+    [navigation],
+  );
   // Function to get permission for location
   const requestLocationPermission = async () => {
     try {
-        const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-                title: 'Cool Photo App Location Permission',
-                message: 'Cool Photo App needs access to your Location',
-                buttonNeutral: 'Ask Me Later',
-                buttonNegative: 'Cancel',
-                buttonPositive: 'OK',
-            },
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Cool Photo App Location Permission',
+          message: 'Cool Photo App needs access to your Location',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Location permission granted');
+        setPermissionGranted(true);
+        getCurrentLocation();
+      } else {
+        console.log('Location permission denied');
+        setPermissionGranted(false);
+        Alert.alert(
+          'Location Permission Denied',
+          'Please enable location permission to use this feature.',
         );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Location permission granted');
-            setPermissionGranted(true);
-            getCurrentLocation();
-        } else {
-            console.log('Location permission denied');
-            setPermissionGranted(false);
-            Alert.alert('Location Permission Denied', 'Please enable location permission to use this feature.');
-        }
+      }
     } catch (err) {
-        console.warn(err);
+      console.warn(err);
     }
-};
+  };
 
-const getCurrentLocation = () => {
+  const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
-        position => {
-            const { latitude, longitude } = position.coords;
-            setCurrentLocation({ latitude, longitude });
-            console.log('Current location:', latitude, longitude);
-        },
-        error => {
-            console.error('Error getting current position:', error);
-            Alert.alert('Error', error.message);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      position => {
+        const {latitude, longitude} = position.coords;
+        setCurrentLocation({latitude, longitude});
+        console.log('Current location:', latitude, longitude);
+      },
+      error => {
+        console.error('Error getting current position:', error);
+        Alert.alert('Error', error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-};
-
-
-
-
-//function of search
-  const handleSearch = (text,location) => {
-    setData(text);
-    setSearchLocation(location);
-    const filtered = dataValue.filter(item =>
-      item.Role.toLowerCase().includes(text.toLowerCase()) &&
-      item.location.toLowerCase().includes(location.toLowerCase())
-    );
-    setFilterData(filtered);
-  };
-  useEffect(() => {
-    setFilterData(dataValue);
-  }, []);
-  const handleSearchPress = () => {
-    // Perform search logic here, if needed
-    // For now, let's just call handleSearch with the current value of 'data'
-    handleSearch(data, searchLocation);
-    searchsheet.current.close()
   };
 
+  //function of search
+  const HandleSearch = text => {
+    if (text) {
+      const filteredJobs = dataValue.filter(item =>
+        item.jobTitle.toLowerCase().includes(text.toLowerCase()),
+      );
+      setFilterData(filteredJobs);
+    } else {
+      setFilterData(null); // Reset filter when search text is empty
+    }
+  };
 
-  useEffect(() => {
-
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-
-    // Clear the timer on unmount to avoid memory leaks
-    return () => clearTimeout(timer);
-  }, []);
-  const renderItem = ({ item }) => (
-   
-    <TouchableOpacity style={styles.item} onPress={()=>{
-      navigation.navigate('CompanyDetails',{item})
-  }
-      }>
-      <View style={{ flexDirection: 'row',justifyContent:'space-between' }}>
-        <View style={{width:'90%'}}>
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      style={styles.item}
+      onPress={() => {
+        navigation.navigate('CompanyDetails', {item});
+      }}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{width: '90%'}}>
           {/* <Text style={styles.title}>{item.title}</Text> */}
           <Text style={styles.roll}>{item.jobTitle}</Text>
           <Text style={styles.company}>{item.companyName}</Text>
           <Text style={styles.details}>{item.jobCategory}</Text>
-          <View style={styles.description}><FontAwesomeIcon icon={faLocationDot} color='#808B96'/><Text style={styles.details}>{item.jobLocation}</Text></View>
-          <View style={styles.description}><FontAwesomeIcon icon={faSuitcase} color='#808B96'/><Text style={styles.details}>{item.experince || "-"}</Text></View>
-          <View style={styles.description}><FontAwesomeIcon icon={faWallet} color='#808B96'/><Text style={styles.details}>{item.salaryFrom + " " +"to" +  " "+item.salaryTo}</Text></View>
+          <View style={styles.description}>
+            <FontAwesomeIcon icon={faLocationDot} color="#808B96" />
+            <Text style={styles.details}>{item.jobLocation}</Text>
+          </View>
+          <View style={styles.description}>
+            <FontAwesomeIcon icon={faSuitcase} color="#808B96" />
+            <Text style={styles.details}>{item.experince || '-'}</Text>
+          </View>
+          <View style={styles.description}>
+            <FontAwesomeIcon icon={faWallet} color="#808B96" />
+            <Text style={styles.details}>
+              {item.salaryFrom + ' ' + 'to' + ' ' + item.salaryTo}
+            </Text>
+          </View>
         </View>
-        <View style={{flexDirection:'column', justifyContent:'space-between'}}>
-          <Image source={item.companyLogo} style={styles.logo} />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-            <TouchableOpacity><View><FontAwesomeIcon icon={faShareNodes} /></View></TouchableOpacity>
-            <TouchableOpacity><View><BookmarkIcon height={20} width={20} color={'#2C3E50'}/></View></TouchableOpacity>
+        <View
+          style={{flexDirection: 'column', justifyContent: 'space-between'}}>
+          {item.companyLogo==null ?<Icons3 name='building-o' size={25} color={COLORS.secondaryLightGreyHex} style={[styles.logo, {paddingLeft:10,paddingTop:7}]}/>:<Image source={item.companyLogo} style={styles.logo} />}
+          <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+            <TouchableOpacity>
+              <View>
+                <FontAwesomeIcon icon={faShareNodes} />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View>
+                <BookmarkIcon height={20} width={20} color={'#2C3E50'} />
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
     </TouchableOpacity>
   );
-
 
   return (
     <HomeBody
@@ -179,78 +232,158 @@ const getCurrentLocation = () => {
       mainDashbord={true}
       title={'Dashboard'}
       isMainPage={true}
-      isLoading={isLoading}
-    >
-      <TouchableOpacity onPress={()=>searchsheet.current.open()} activeOpacity={1}>
-      <View style={[styles.searchContainer, isSearchFocused && styles.searchContainerFocused]}>
-        <FontAwesomeIcon icon={faSearch} size={20} style={styles.searchIcon} />
-        <Text>search here...</Text>
-   
-       
-      </View>
-      </TouchableOpacity>
-      <RBSheet
-        ref={searchsheet}
-        height={windowHeight}
-        openDuration={250}
-        customStyles={{
-          container: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-          },
-        }}>
-          <View style={styles.searchbottomsheet}>
-            <TouchableOpacity onPress={()=>searchsheet.current.close()} style={{marginVertical:20}}><BackIcon color={'#000'} height={25} width={25}/></TouchableOpacity>
-            <Text style={{fontFamily:fonts.CircularStdMedium,fontSize:SIZES.body1,color:'#440217'}}>
-              Search jobs and companies here
-            </Text>
-            <CustomTextInput
-            placeholder={'search jobs'}
-            inputStyle={{fontFamily:fonts.CircularStdBook,fontSize:SIZES.body2}}
-            value={data}
-            onChangeText={text => handleSearch(text, searchLocation)}/> 
-            <CustomTextInput
-            placeholder={'Location'}
-            inputStyle={{fontFamily:fonts.CircularStdBook,fontSize:SIZES.body2}}
-            onChangeText={location => handleSearch(data, location)}
-            value={searchLocation}
+      isLoading={isLoading}>
+      <View style={styles.InputContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            searchCoffee(searchText);
+          }}>
+          <Icons
+            name="search"
+            size={FONTSIZE.size_18}
+            color={
+              searchText.length > 0
+                ? COLORS.primaryOrangeHex
+                : COLORS.primaryLightGreyHex
+            }
+            style={styles.InputIcon}
+          />
+        </TouchableOpacity>
+        <TextInput
+          placeholder="Search here"
+          value={searchText}
+          placeholderTextColor={COLORS.primaryLightGreyHex}
+          onChangeText={text => {
+            setSearchText(text);
+            HandleSearch(text); // Call the search function on text change
+          }}
+          style={styles.TextInputContainer}
+        />
+        {searchText.length > 0 ? (
+          <TouchableOpacity
+            onPress={() => {
+              setSearchText(''); // Reset the search text
+              setFilterData(null); // Reset the filtered data
+            }}>
+            <Icons2
+              name="close"
+              size={FONTSIZE.size_18}
+              color={COLORS.primaryLightGreyHex}
+              style={styles.InputIcon}
             />
-            <TouchableOpacity style={{flexDirection:'row',marginBottom:'10%'}} onPress={requestLocationPermission} ><CurrentLocation height={22} width={22} style={{marginHorizontal:5}}/><Text style={{color:'red',fontFamily:fonts.CircularStdMedium,fontSize:SIZES.body2}}>Current Location</Text></TouchableOpacity>
-             <TouchableOpacity style={styles.button} onPress={handleSearchPress}><Text style={{ fontFamily: fonts.CircularStdMedium, color: '#fff' }}>search</Text></TouchableOpacity>
-          </View>
-          </RBSheet>
-      
-
-      
-      <View style={{flexDirection:'row',justifyContent:'space-between',marginTop:10,width:'94%'}}>
-      <TouchableOpacity onPress={() => navigation.navigate('JobAppliedScreen')} style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:35,backgroundColor:"#440217"}}>
-          <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Job Applied</Text>
-        </TouchableOpacity>
-        <View style={{ marginLeft: '5%' ,borderWidth:1,borderRadius:5,padding:20,paddingHorizontal:43,backgroundColor:"#440217"}}>
-          <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Interview</Text>
-        </View>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
       </View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: '2%', marginBottom: '2%' }}>
-        <TouchableOpacity style={{ marginLeft: '5%' }}>
-          <Text style={{ fontFamily: fonts.CircularStdBook, color: 'black' }}>Recomended for you</Text>
+      {/* Job Applied and Interview Buttons */}
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          
+        }}>  
+        <TouchableOpacity
+          onPress={() => navigation.navigate('JobAppliedScreen')}>
+         <LinearGradient
+        start={{x:0,y:0}}
+        end={{x:1,y:1}}
+        useAngle={true}
+        angle={170}
+       style={{ padding: SPACING.space_15, borderRadius:BORDERRADIUS.radius_10,marginLeft:SPACING.space_20, paddingHorizontal:SPACING.space_32}}
+        colors={[COLORS.primaryRedHex,COLORS.primaryWhiteHex]}>
+          <Text
+            style={{
+              fontFamily: fonts.CircularStdBook,
+              color: COLORS.primaryBlackHex,
+            }}>
+            Job Applied
+          </Text>
+          </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity style={{ marginRight: '5%' }}>
-          <Text style={{ fontFamily: fonts.CircularStdBook, color: 'black' }}>more</Text>
+        
+        <TouchableOpacity>
+        <LinearGradient
+        start={{x:0,y:0}}
+        end={{x:1,y:1}}
+        useAngle={true}
+        angle={170}
+       style={{ padding: SPACING.space_15, borderRadius:BORDERRADIUS.radius_10,marginRight:SPACING.space_20,paddingHorizontal:SPACING.space_32}}
+        colors={[COLORS.primaryRedHex,COLORS.primaryWhiteHex]}>
+          <Text
+            style={{
+              fontFamily: fonts.CircularStdBook,
+              color: COLORS.primaryBlackHex,
+            }}>
+           InterView
+          </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+      {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, width: '94%' }}>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('JobAppliedScreen')}
+      style={{
+        marginLeft: '5%',
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 20,
+        paddingHorizontal: 35,
+        backgroundColor: '#440217',
+      }}
+    >
+      <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Job Applied</Text>
+    </TouchableOpacity>
+    <View
+      style={{
+        marginLeft: '5%',
+        borderWidth: 1,
+        borderRadius: 5,
+        padding: 20,
+        paddingHorizontal: 43,
+        backgroundColor: '#440217',
+      }}
+    >
+      <Text style={{ fontFamily: fonts.CircularStdBook, color: '#fff' }}>Interview</Text>
+    </View>
+  </View> */}
+
+      {/* Recommended and More Sections */}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: '2%',
+          marginBottom: '2%',
+        }}>
+        <TouchableOpacity style={{marginLeft: '5%'}}>
+          <Text style={{fontFamily: fonts.CircularStdBook, color: 'black'}}>
+            Recommended for you
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{marginRight: '5%'}}>
+          <Text style={{fontFamily: fonts.CircularStdBook, color: 'black'}}>
+            more
+          </Text>
         </TouchableOpacity>
       </View>
 
+      {/* Job Listings */}
       <ScrollView>
         <View style={styles.container}>
-         <FlatList
-            data={ filterData|| dataValue}
+          <FlatList
+            data={filterData || dataValue} // Display filtered or original data
             extraData={filterData || dataValue}
             renderItem={renderItem}
-            keyExtractor={(item) => item.key}
-            contentContainerStyle={styles.flatListContent}
+            keyExtractor={item => item.key}
+            contentContainerStyle={[
+              styles.flatListContent,
+              {marginBottom: TabBarHight},
+            ]}
           />
         </View>
       </ScrollView>
-      
     </HomeBody>
   );
 };
@@ -274,14 +407,14 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: '#5DADE2',
+    borderColor: '#8B0000',
     // Make the logo image round
   },
-  rate:{
+  rate: {
     width: 15,
     height: 15,
-   borderColor:'black',
-   borderWidth:2
+    borderColor: 'black',
+    borderWidth: 2,
   },
   title: {
     //marginTop:-50,
@@ -300,7 +433,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.CircularStdBook,
     color: '#555',
     marginBottom: 5,
-    marginLeft:4
+    marginLeft: 4,
   },
 
   company: {
@@ -316,12 +449,11 @@ const styles = StyleSheet.create({
   },
   validcontainer: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: '1%',
     //margin: 8,
     marginLeft: '5%',
-    marginRight: "5%",
-
+    marginRight: '5%',
   },
   valid: {
     backgroundColor: '#B2BABB',
@@ -346,17 +478,16 @@ const styles = StyleSheet.create({
     marginLeft: '6%',
     marginRight: '5%',
     marginBottom: '2%',
-
   },
   checkboxLabel: {
     marginLeft: '2%',
     marginRight: '1%',
-    fontFamily: fonts.CircularStdBook
+    fontFamily: fonts.CircularStdBook,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: '1%',
+    marginTop: '5%',
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 10,
@@ -366,16 +497,16 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     //justifyContent: 'center',
-    fontFamily: fonts.CircularStdBook
+    fontFamily: fonts.CircularStdBook,
   },
-  searchbottomsheet:{
-    flex:1,
-    padding:15,
+  searchbottomsheet: {
+    flex: 1,
+    padding: 15,
     //alignItems:'center'
   },
   searchContainerFocused: {
     backgroundColor: '#fff',
-    borderColor: '#3498DB'
+    borderColor: '#3498DB',
   },
   searchIcon: {
     color: 'gray',
@@ -385,8 +516,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
   },
-  description:{
-    flexDirection:'row',
+  description: {
+    flexDirection: 'row',
   },
   button: {
     backgroundColor: '#0277BD',
@@ -394,7 +525,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 20,
     alignItems: 'center',
-  }
+  },
+  InputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: SPACING.space_15,
+    marginHorizontal: SPACING.space_15,
+    borderRadius: BORDERRADIUS.radius_20,
+    borderWidth: 1,
+  },
+  InputIcon: {
+    marginHorizontal: SPACING.space_20,
+  },
+  TextInputContainer: {
+    flex: 1,
+    height: SPACING.space_20 * 3,
+    fontFamily: fonts.CircularStdBook,
+    fontSize: SIZES.body1,
+    color: COLORS.primaryBlackHex,
+  },
 });
 
 export default Dashboard;

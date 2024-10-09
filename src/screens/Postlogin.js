@@ -6,6 +6,9 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { SIZES, fontSize } from '../styles/config';
 import { fonts } from '../../config';
+import { useDispatch } from 'react-redux';
+import { SET_EMPLYERLOGIN_RESPONSE } from '../redux/constants';
+import { store } from '../redux';
 
 const validationSchema = Yup.object().shape({
   Username: Yup.string().required('*Username is required'),
@@ -14,6 +17,7 @@ const validationSchema = Yup.object().shape({
 
 const Postlogin = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const dispatch=useDispatch()
   const handleLogin = useCallback(async (values) => {
     setLoading(true);
     try {
@@ -24,10 +28,17 @@ const Postlogin = ({ navigation }) => {
       console.log('Sending request to the server:', request);
 
       const response = await axios.post('https://rishijob.com/backend/api/v1/company/authenticate', request);
-      console.log(response.data);
+      console.log("------------9999999999999999999--------------------",response);
       setLoading(false);
-      if (response.data.success) {
+      if (response.data.success)
+        
+         {
+          store.dispatch({
+            type: SET_EMPLYERLOGIN_RESPONSE,
+            payload:  response.data,
+          });
         navigation.navigate('Post');
+       
       } else {
         Alert.alert('Login Failed');
       }

@@ -14,7 +14,6 @@ import { SIZES } from '../styles/config';
 const JobAppliedScreen = ({navigation,route}) => {
     const [jobs, setJobs] = useState([]);
     const {params} = route;
-    console.log('=============params====',params)
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
         jobDetailsApi()
@@ -23,7 +22,7 @@ const JobAppliedScreen = ({navigation,route}) => {
         setLoading(true);
         try {
           const response = await axios.get('https://rishijob.com/backend/api/v1/jobs');
-          console.log('=================',response.data.data)
+  
           setJobs(response.data.data.data)
           setLoading(false);
         } catch (error) {
@@ -48,7 +47,7 @@ const JobAppliedScreen = ({navigation,route}) => {
 
 
 
-    const renderJobItem = ({ item }) => (
+    const renderJobItem = ({item }) => (
         <TouchableOpacity style={styles.item} 
             >
            <View style={{ flexDirection: 'row',justifyContent:'space-between' }}>
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
       flexDirection:'row',
     },
     button: {
-      backgroundColor: '#0277BD',
+      backgroundColor: '#0277BD', 
       paddingVertical: 12,
       paddingHorizontal: 24,
       borderRadius: 20,

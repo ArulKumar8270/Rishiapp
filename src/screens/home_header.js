@@ -37,6 +37,9 @@ import {
   faTriangleExclamation,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { loginResponseSelector, UserDataSelector } from '../redux/selectors/app.selector';
+import { useSelector } from 'react-redux';
+import { COLORS } from '../styles/config';
 
 export default function HomeHeader({title, navigation, isMainPage, logoimage}) {
   const [navDraw, setNavDraw] = useState(false);
@@ -47,7 +50,8 @@ export default function HomeHeader({title, navigation, isMainPage, logoimage}) {
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [address, setAddress] = useState('');
-
+  const loginResponse = useSelector(loginResponseSelector);
+  const userResponse=useSelector(UserDataSelector)
   const 
   handleLogout = () => {
     // Display a customized alert for logout confirmation
@@ -251,12 +255,14 @@ export default function HomeHeader({title, navigation, isMainPage, logoimage}) {
         <View style={styles.logoContainer}>
           <View>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-              <Image
-                source={require('../assets/dp.png')}
-                style={styles.logoImage}
-              />
+            {userResponse && userResponse.gender === 'male' ? (
+        <Image source={require('../assets/male.png')} style={styles.logoImage} />
+      ) : (
+        <Image source={require('../assets/female.png')} style={styles.logoImage} />
+      )}
             </TouchableOpacity>
           </View>
+          <Text style={{fontFamily:fonts.CircularStdBlack ,color:'#2874a6',marginLeft:20}}>{loginResponse?.data?.firstName}</Text>
         </View>
       )}
     </View>

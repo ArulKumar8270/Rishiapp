@@ -26,16 +26,17 @@ const Login = ({ navigation }) => {
       setLoading(true);
       try {
         const request = {
-          userName: values.MobileNumber,
+          userName: values.MobileNumber,  
           password: values.Password,
         };
-        console.log('Sending request to the server:',await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request));
+       
   
         const response = await axios.post('https://rishijob.com/backend/api/v1/customers/authenticate', request);
 
-        console.log("=================================ss",response.data);
         setLoading(false);
         if (response.data.success) {
+          console.log('sucsuss>>>>>>>>>>>>>>>>>>>>>>>>>' , response.data);
+          
           navigation.navigate('Dashbord',{request,data : response.data});
           store.dispatch({
             type: SET_LOGIN_RESPONSE,
@@ -69,7 +70,7 @@ const Login = ({ navigation }) => {
 
   return (
     <Formik
-      initialValues={{ MobileNumber: '', Password: '' }}
+      initialValues={{ MobileNumber: '', Password: '' }} 
       validationSchema={validationSchema}
       onSubmit={handleLogin}
     >

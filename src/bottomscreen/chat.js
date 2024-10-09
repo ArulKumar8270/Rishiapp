@@ -1,141 +1,126 @@
-import React from 'react'
-import { FlatList, Image, ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { fonts } from '../../config'
-import { SIZES } from '../styles/config'
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import { loginResponseSelector } from '../redux/selectors/app.selector';
+import { firestore } from '../componants/firebase';
+import { COLORS, FONTSIZE, SPACING, BORDERRADIUS } from '../styles/config'; // Assuming you have a config file for styles
+import Icons from 'react-native-vector-icons/Feather';
 
-const Chat = ({ navigation }) => {
-  const chatlist = [
-    {
-      key: '1',
-      image: require('../assets/zoho.png'),
-      time: '12:30 PM',
-      name: 'Sivabalan',
-      message: 'Hello! How are you?'
-    },
-    {
-      key: '2',
-      image: require('../assets/zoho.png'),
-      time: '12:30 PM',
-      name: 'Arul',
-      message: 'Hello! How are you?'
-    },
-    {
-      key: '3',
-      image: require('../assets/zoho.png'),
-      time: '12:30 PM',
-      name: 'guna',
-      message: 'Hello! How are you?'
-    },
-    {
-      key: '4',
-      image: require('../assets/zoho.png'),
-      time: '12:30 PM',
-      name: 'suriya',
-      message: 'Hello! How are you?'
-    },
-    // Add more chat objects as needed
-  ]
+const ChatScreen = () => {
+  const navigation = useNavigation();
+  const loginResponse = useSelector(loginResponseSelector);
+  const [companies, setCompanies] = useState([]);
+  const userId = loginResponse?.data?.id;
 
-  const chatrender = ({ item }) => (
-    <SafeAreaView style={styles.chatItem}>
-      <TouchableOpacity
-        style={styles.chatTouchable}
-        onPress={() => {navigation.navigate('ConversationScreen',{item})}}
-      >
-        <View style={styles.imageContainer}>
-          <Image source={item.image} style={styles.chatImage} />
-        </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.timeText}>{item.time}</Text>
-          <Text style={styles.nameText}>{item.name}</Text>
-          <Text style={styles.messageText}>{item.message}</Text>
-        </View>
-      </TouchableOpacity>
-    </SafeAreaView>
-  )
+  // Fetch companies list from Firestore
+  useEffect(() => {
+    if (userId) {
+      const unsubscribe = firestore()
+        .collection('chats')
+        .doc(userId)
+        .collection('companies')
+        .orderBy('lastMessageAt', 'desc')
+        .onSnapshot(querySnapshot => {
+          const companiesList = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setCompanies(companiesList);
+        });
+
+      return () => unsubscribe();
+    }
+  }, [userId]);
+
+  // Render each company item
+  const renderCompanyItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.chatItem}
+      onPress={() =>
+        navigation.navigate('ConversationScreen', {
+          conversationId: item.id,
+          companyId: item.companyId,
+          companyName: item.companyName,
+        })
+      }
+    >
+      <View style={styles.companyInfo}>
+        <Text style={styles.companyName}>{item.companyName}</Text>
+        <Text style={styles.lastMessageText}>{item.lastMessage}</Text>
+      </View>
+      <View style={styles.messageTimeContainer}>
+        <Text style={styles.timeText}>
+          {item.lastMessageAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} {/* Formats timestamp */}
+        </Text>
+        <Icons name="chevron-right" size={FONTSIZE.size_20} color={COLORS.primaryGreyHex} />
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
-    <SafeAreaView style={styles.outerContainer}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.title}>Messages</Text>
-      </View>
-      <ImageBackground source={require('../assets/Background.png')} style={styles.container}>
-        <FlatList
-          data={chatlist}
-          renderItem={chatrender}
-          keyExtractor={(item) => item.key}
-          contentContainerStyle={styles.flatliststyle}
-        />
-      </ImageBackground>
-    </SafeAreaView>
-  )
-}
-
-export default Chat
+    <View style={styles.container}>
+      <FlatList
+        data={companies}
+        keyExtractor={item => item.id}
+        renderItem={renderCompanyItem}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={<Text style={styles.emptyText}>No conversations yet.</Text>}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  headerContainer: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#ccc',
-    padding: 15,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: SIZES.body1,
-    fontFamily: fonts.CircularStdBlack,
-    color: '#000',
-  },
   container: {
     flex: 1,
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.secondaryGreyHex,
+    padding: SPACING.space_15,
   },
-  flatliststyle: {
-    alignItems: 'center',
+  listContent: {
+    paddingBottom: SPACING.space_20,
   },
   chatItem: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#440217',
-    width: '100%',
+    backgroundColor: COLORS.primaryWhiteHex,
+    padding: SPACING.space_15,
+    marginVertical: SPACING.space_10,
+    borderRadius: BORDERRADIUS.radius_10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  chatTouchable: {
+  companyInfo: {
+    flex: 1,
+  },
+  companyName: {
+    fontSize: FONTSIZE.size_18,
+    fontWeight: 'bold',
+    color: COLORS.primaryBlackHex,
+    marginBottom: SPACING.space_5,
+  },
+  lastMessageText: {
+    fontSize: FONTSIZE.size_14,
+    color: COLORS.primaryGreyHex,
+  },
+  messageTimeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  imageContainer: {
-    marginRight: 15,
-  },
-  chatImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    borderWidth: 0.5,
-    borderColor: '#ccc',
-  },
-  textContainer: {
-    flex: 1,
-  },
   timeText: {
-    fontSize: 12,
-    color: '#D3D3D3',
-    marginBottom: 5,
+    fontSize: FONTSIZE.size_12,
+    color: COLORS.primaryGreyHex,
+    marginRight: SPACING.space_10,
   },
-  nameText: {
-    fontSize: SIZES.h2,
-    fontFamily: fonts.CircularStdBlack,
-    color: '#fff',
+  emptyText: {
+    textAlign: 'center',
+    color: COLORS.primaryGreyHex,
+    fontSize: FONTSIZE.size_16,
+    marginTop: SPACING.space_20,
   },
-  messageText: {
-    fontSize: 14,
-    color: '#fff',
-  },
-})
+});
+
+export default ChatScreen;

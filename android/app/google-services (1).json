@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "797178926607",
+    "project_id": "rishijobchat",
+    "storage_bucket": "rishijobchat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:797178926607:android:00dac71f0a8a4fbd38757a",
+        "android_client_info": {
+          "package_name": "com.rishijobs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOnHxR-PSSbb3fqh4NgXqm98Xm25y5K4Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

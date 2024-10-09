@@ -51,7 +51,6 @@ const CreateJob = ({ navigation }) => {
       };
 
       const response = await axios.post(`https://rishijob.com/backend/api/v1/courses`, request);
-      console.log('------------------',response.data)
       setLoading(false);
       if (response.data.success) {
         navigation.navigate('Jobs',{response});

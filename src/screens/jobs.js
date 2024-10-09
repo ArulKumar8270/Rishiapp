@@ -35,7 +35,7 @@ const Jobs = ({navigation,route}) => {
     <TouchableOpacity style={styles.item} onPress={()=>{
     }
         }>
-          {console.log('================8888',item)}
+
         <View style={{ flexDirection: 'row',justifyContent:'space-between' }}>
           <View style={{width:'90%'}}>
             {/* <Text style={styles.title}>{item.title}</Text> */}

@@ -1,5 +1,5 @@
 // App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,7 +15,6 @@ import Notify from './src/bottomscreen/notify';
 import Profile from './src/bottomscreen/profile';
 import { Animated, Image, StyleSheet} from 'react-native';
 import Home from './src/screens/Home';
-import { HomeIcon,ChatIcon,BellIcon, MyIcon, FocusBell, FocusHomeIcon, FocusChatIcon, FocusMyIcon } from './src/assets/svg';
 import { View } from 'react-native';
 import Serachbar from './src/screens/serachbar';
 import Basicdetails from './src/bottomscreen/profileitems.js/basicdetails';
@@ -44,6 +43,14 @@ import Disclaimer from './src/Slidemenu/disclimer';
 import ProfileUpdate from './src/bottomscreen/profileitems.js/Profileupdate';
 import { Provider } from 'react-redux';
 import { store } from './src/redux';
+import Icons from 'react-native-vector-icons/Feather'
+import Icons2 from 'react-native-vector-icons/Ionicons'
+import { BlurView } from '@react-native-community/blur';
+import client from './src/config/Stream';
+import { StreamChat } from 'stream-chat';
+import AppNavigator from './src/navigation/AppNavigator';
+import ChatScreen from './src/bottomscreen/chat';
+import CoversationScreen from './src/bottomscreen/conversationScreen';
 
 //import CustomDrawer from './src/navigation/CustomDrawer';
 
@@ -52,6 +59,7 @@ import { store } from './src/redux';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const App = () => {
+
   return (
     <Provider
     store={store}> 
@@ -74,7 +82,7 @@ const App = () => {
         <Stack.Screen name='CompanyDetails' component={CompanyDetails}/>
         <Stack.Screen name='AppliedSucsuss' component={AppliedSucsuss}/>
         <Stack.Screen name='Resetpassword' component={Resetpassword}/>
-        <Stack.Screen name='ConversationScreen' component={ConversationScreen}/>
+        <Stack.Screen name='ConversationScreen' component={CoversationScreen}/>
         <Stack.Screen name="CreateJob" component={CreateJob} />
         <Stack.Screen name="Jobs" component={Jobs} />
         <Stack.Screen name='JobAppliedScreen' component={JobAppliedScreen}/>
@@ -98,35 +106,39 @@ const DashboardStack = () => {
   return (
     <Tab.Navigator 
     screenOptions=
-    {{tabBarShowLabel:true,
-      tabBarLabelStyle:{fontFamily:fonts.CircularStdBook},
+    {{tabBarShowLabel:false,
+      tabBarHideOnKeyboard:true,
+      tabBarLabelStyle:{fontFamily:fonts.CircularStdBook,color:'#8B0000'},
       headerShown:false,
     tabBarStyle:{
-      position:'absolute',
-      left:0,
-      right:0,
-      bottom:0,
-      elevation:0,
-  }}}>
+        height:80,
+        position:'absolute',
+        backgroundColor:'#fff',
+        borderTopWidth:0,
+        elevation:0,
+        borderTopColor:'transparent', 
+  },tabBarBackground:()=>(
+   <BlurView overlayColor='' blurAmount={15} style={styles.BlurViewStyle}/>
+  ),}}>
       <Tab.Screen name="Dashboard" component={Dashboard} options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <HomeIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <HomeIcon color={'#17202A'} height={20} width={25}/>
+            focused ? <Icons name='home' size={25} color={'#8B0000'}/> : <Icons name='home' size={25} color={'#2c3e50'}/>
           ),
          }}
       />
-      <Tab.Screen name="Chat" component={Chat}  options={{
+      <Tab.Screen name="Chat" component={ChatScreen}  options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <ChatIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <ChatIcon color={'#17202A'} height={20} width={25}/>
+            focused ? <Icons2 name='chatbubble-ellipses-outline' size={25} color={'#8B0000'}/> : <Icons2 name='chatbubble-ellipses-outline' size={25} color={'#2c3e50'}/>
           ),
         }} />
-      <Tab.Screen name="Notification" component={Notify}  options={{
+      {/* <Tab.Screen name="Notification" component={Notify}  options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <BellIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <BellIcon color={'#17202A'} height={20} width={25}/>
+            focused ? <Icons name='bell' size={25} color={'#8B0000'}/> : <Icons name='bell' size={25} color={'#2c3e50'}/>
           ),
-        }} />
+        }} /> */}
       <Tab.Screen name="Profile" component={Profile}  options={{
           tabBarIcon: ({ focused, color, size }) => (
-            focused ? <MyIcon height={20} width={35} color={'#fff'} style={styles.Tabfocus}/> : <MyIcon color={'#17202A'} height={20} width={25}/>
+            focused ? <Icons name='user' size={25} color={'#8B0000'}/> : <Icons name='user' size={25} color={'#2c3e50'}/>
           ),
         }} />
     </Tab.Navigator>
@@ -139,5 +151,12 @@ const styles=StyleSheet.create({
   borderRadius:10,
   borderBottomColor:'#641E16',
   borderBottomWidth:2,
- }
+ },
+ BlurViewStyle:{
+  position:'absolute',
+  top:0,
+  bottom:0,
+  left:0,
+  right:0
+}
 })
